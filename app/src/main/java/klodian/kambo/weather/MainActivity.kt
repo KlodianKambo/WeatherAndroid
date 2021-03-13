@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import klodian.kambo.weather.adapter.WeatherRecyclerViewAdapter
 import klodian.kambo.weather.databinding.ActivityMainBinding
+import java.util.*
 
 class MainActivity : BaseActivity() {
     lateinit var viewModel: MainViewModel
@@ -22,9 +23,8 @@ class MainActivity : BaseActivity() {
         binding.weatherRecyclerView.adapter = weatherAdapter
 
         binding.weatherSearch.setOnClickListener {
-            viewModel.getWeather(binding.cityEditText.text.toString()).observe(this) {
-                weatherAdapter.submitList(it)
-            }
+            viewModel.getWeather(binding.cityEditText.text.toString(), Locale.getDefault())
+                .observe(this) { weatherAdapter.submitList(it) }
         }
     }
 }

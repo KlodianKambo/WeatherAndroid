@@ -8,6 +8,7 @@ import klodian.kambo.domain.Weather
 import klodian.kambo.domain.WeatherRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -16,9 +17,11 @@ class MainViewModel @Inject constructor(
 
     private val weatherLiveData: MutableLiveData<List<UiWeather>> = MutableLiveData()
 
-    fun getWeather(pattern: String): LiveData<List<UiWeather>> {
+    fun getWeather(pattern: String, locale: Locale): LiveData<List<UiWeather>> {
         viewModelScope.launch(Dispatchers.IO) {
-            weatherLiveData.postValue(weatherRepo.getWeather(pattern).map { it.toUiWeather() })
+            weatherLiveData.postValue(
+                weatherRepo.getWeather(pattern.trim(), locale)
+                    .map { it.toUiWeather() })
         }
         return weatherLiveData
     }
