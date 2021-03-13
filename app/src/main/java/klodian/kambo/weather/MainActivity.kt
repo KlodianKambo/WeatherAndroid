@@ -1,0 +1,12 @@
+package klodian.kambo.weather
+
+import android.os.Bundle
+
+class MainActivity : BaseActivity() {
+    lateinit var viewModel: MainViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        viewModel = getViewModel()
+    }
+}
