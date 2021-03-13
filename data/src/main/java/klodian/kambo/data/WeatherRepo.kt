@@ -5,7 +5,10 @@ import klodian.kambo.domain.WeatherRepo
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-class WeatherRepoImpl @Inject constructor(private val weatherApi: WeatherApi) : WeatherRepo {
+class WeatherRepoImpl @Inject constructor(
+    private val weatherApi: WeatherApi,
+    private val getIconPath: GetIconPath
+) : WeatherRepo {
     override suspend fun getWeather(cityName: String) = coroutineScope {
         weatherApi.getSongs(cityName).weather.map { it.toWeather() }
     }
@@ -15,7 +18,7 @@ class WeatherRepoImpl @Inject constructor(private val weatherApi: WeatherApi) : 
             id = id,
             weather = main,
             description = description,
-            iconName = icon
+            iconName = getIconPath(icon)
         )
     }
 }
