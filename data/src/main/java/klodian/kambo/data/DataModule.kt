@@ -5,7 +5,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import klodian.kambo.domain.WeatherRepo
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -21,20 +20,19 @@ class DataModule {
     fun providesOkHttpClient(dataConfiguration: DataConfiguration): OkHttpClient {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val appIdInterceptor = Interceptor { chain ->
-            var original = chain.request()
-            val url = original.url
-                .newBuilder()
-                .addQueryParameter(dataConfiguration.appIdParam, dataConfiguration.appIdValue)
-                .build()
-            original = original.newBuilder().url(url).build()
-            chain.proceed(original)
-        }
-
         return OkHttpClient.Builder()
             .addNetworkInterceptor(httpLoggingInterceptor)
-            .addInterceptor(appIdInterceptor)
+            .addInterceptor { interceptorChain ->
+                var original = interceptorChain.request()
+                val url = original
+                    .url()
+                    .newBuilder()
+                    .addQueryParameter(dataConfiguration.appIdParam, dataConfiguration.appIdValue)
+                    .build()
+
+                original = original.newBuilder().url(url).build()
+                interceptorChain.proceed(original)
+            }
             .build()
     }
 
