@@ -1,6 +1,6 @@
 package klodian.kambo.data
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
@@ -15,7 +15,7 @@ class GetValidSearchPatternUseCaseTest {
 
         getValidSearchPatternUseCase(
             patternToTest,
-            success = { result -> Assert.assertEquals(expectedResult, result) },
+            success = { result -> assertEquals(expectedResult, result) },
             error = { throw RuntimeException("Test failed, error $it should not occur") })
     }
 
@@ -28,10 +28,7 @@ class GetValidSearchPatternUseCaseTest {
             patternToTest,
             success = { throw RuntimeException("Test failed, success should not be triggered") },
             error = { patternValidationError ->
-                Assert.assertEquals(
-                    expectedResult,
-                    patternValidationError
-                )
+                assertEquals(expectedResult, patternValidationError)
             })
     }
 
@@ -44,10 +41,7 @@ class GetValidSearchPatternUseCaseTest {
             patternToTest,
             success = { throw RuntimeException("Test failed, success should not be triggered") },
             error = { patternValidationError ->
-                Assert.assertEquals(
-                    expectedResult,
-                    patternValidationError
-                )
+                assertEquals(expectedResult, patternValidationError)
             })
     }
 
@@ -60,10 +54,7 @@ class GetValidSearchPatternUseCaseTest {
             nullPatternToTest,
             success = { throw RuntimeException("Test failed, success should not be triggered") },
             error = { patternValidationError ->
-                Assert.assertEquals(
-                    expectedResult,
-                    patternValidationError
-                )
+                assertEquals(expectedResult, patternValidationError)
             })
 
         val emptyStringToTest = ""
@@ -72,10 +63,7 @@ class GetValidSearchPatternUseCaseTest {
             emptyStringToTest,
             success = { throw RuntimeException("Test failed, success should not be triggered") },
             error = { patternValidationError ->
-                Assert.assertEquals(
-                    expectedResult,
-                    patternValidationError
-                )
+                assertEquals(expectedResult, patternValidationError)
             })
     }
 }
