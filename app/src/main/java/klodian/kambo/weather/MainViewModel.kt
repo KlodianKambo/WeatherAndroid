@@ -11,6 +11,7 @@ import klodian.kambo.domain.GetValidSearchPatternUseCase
 import klodian.kambo.domain.SafeRequestError
 import klodian.kambo.domain.Weather
 import klodian.kambo.domain.WeatherRepo
+import klodian.kambo.weather.model.UiWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
@@ -62,11 +63,11 @@ class MainViewModel @Inject constructor(
                                 )
                             )
                         },
-                        ifRight = { weatherList ->
+                        ifRight = { completeWeatherInfo ->
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    weatherList.map { weather -> weather.toUiWeather() }
+                                    completeWeatherInfo.weather.map { weather -> weather.toUiWeather() }
                                 )
                             )
                         })

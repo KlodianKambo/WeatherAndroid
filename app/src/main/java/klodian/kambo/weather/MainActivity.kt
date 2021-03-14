@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import klodian.kambo.weather.adapter.WeatherRecyclerViewAdapter
 import klodian.kambo.weather.databinding.ActivityMainBinding
 import klodian.kambo.weather.extensions.hideKeyboard
+import klodian.kambo.weather.model.UiWeather
 import java.util.*
 
 

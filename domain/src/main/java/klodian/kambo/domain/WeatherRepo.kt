@@ -4,5 +4,5 @@ import arrow.core.Either
 import java.util.*
 
 interface WeatherRepo {
-    suspend fun getWeather(cityName: String, locale: Locale): Either<SafeRequestError, List<Weather>>
+    suspend fun getWeather(cityName: String, locale: Locale): Either<SafeRequestError, CompleteWeatherInfo>
 }
