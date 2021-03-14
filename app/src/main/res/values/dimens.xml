@@ -4,4 +4,5 @@
     <dimen name="size32">32dp</dimen>
     <dimen name="size40">40dp</dimen>
     <dimen name="size60">60dp</dimen>
+    <dimen name="size80">80dp</dimen>
 </resources>

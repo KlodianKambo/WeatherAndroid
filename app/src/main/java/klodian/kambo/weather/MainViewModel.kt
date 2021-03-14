@@ -35,26 +35,39 @@ class MainViewModel @Inject constructor(
         data class WeatherNotFound(val searchValue: String) :
             SearchError(R.string.search_error_not_found, R.drawable.ic_baseline_live_help)
 
-        object Generic : SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
+        object Generic :
+            SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
     }
 
     private val weatherLiveData: MutableLiveData<Either<SearchError, List<UiWeather>>> =
         MutableLiveData()
 
+    private val loadingLiveData = MutableLiveData(false)
+
     fun getWeatherResult(): LiveData<Either<SearchError, List<UiWeather>>> = weatherLiveData
+    fun isLoading(): LiveData<Boolean> = loadingLiveData
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
+                loadingLiveData.postValue(true)
+
                 viewModelScope.launch(Dispatchers.IO) {
                     weatherRepo.getWeather(correctedPattern, locale).fold(
                         ifLeft = { safeRequestError ->
-                            weatherLiveData.postValue(Either.left(safeRequestError.toSearchError(correctedPattern)))
+                            loadingLiveData.postValue(false)
+                            weatherLiveData.postValue(
+                                Either.left(
+                                    safeRequestError.toSearchError(correctedPattern)
+                                )
+                            )
                         },
                         ifRight = { weatherList ->
+                            loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    weatherList.map { weather -> weather.toUiWeather() })
+                                    weatherList.map { weather -> weather.toUiWeather() }
+                                )
                             )
                         })
                 }
