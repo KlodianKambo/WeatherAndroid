@@ -1,4 +1,4 @@
-package klodian.kambo.data
+package klodian.kambo.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -13,10 +13,9 @@ class GetValidSearchPatternUseCaseTest {
         val patternToTest = ",,, London,  , uk ,"
         val expectedResult = "London,uk"
 
-        getValidSearchPatternUseCase(
-            patternToTest,
-            success = { result -> assertEquals(expectedResult, result) },
-            error = { throw RuntimeException("Test failed, error $it should not occur") })
+        getValidSearchPatternUseCase(patternToTest).fold(
+            ifRight = { result -> assertEquals(expectedResult, result) },
+            ifLeft = { throw RuntimeException("Test failed, error $it should not occur") })
     }
 
     @Test
@@ -24,10 +23,9 @@ class GetValidSearchPatternUseCaseTest {
         val patternToTest = ",,, London,  , uk , London, uk,,,"
         val expectedResult = GetValidSearchPatternUseCase.PatternValidationError.TooManyCommaParams
 
-        getValidSearchPatternUseCase(
-            patternToTest,
-            success = { throw RuntimeException("Test failed, success should not be triggered") },
-            error = { patternValidationError ->
+        getValidSearchPatternUseCase(patternToTest).fold(
+            ifRight = { throw RuntimeException("Test failed, success should not be triggered") },
+            ifLeft = { patternValidationError ->
                 assertEquals(expectedResult, patternValidationError)
             })
     }
@@ -37,10 +35,9 @@ class GetValidSearchPatternUseCaseTest {
         val patternToTest = ",,,,,,,,,,,"
         val expectedResult = GetValidSearchPatternUseCase.PatternValidationError.NoParamsFound
 
-        getValidSearchPatternUseCase(
-            patternToTest,
-            success = { throw RuntimeException("Test failed, success should not be triggered") },
-            error = { patternValidationError ->
+        getValidSearchPatternUseCase(patternToTest).fold(
+            ifRight = { throw RuntimeException("Test failed, success should not be triggered") },
+            ifLeft = { patternValidationError ->
                 assertEquals(expectedResult, patternValidationError)
             })
     }
@@ -50,19 +47,17 @@ class GetValidSearchPatternUseCaseTest {
         val nullPatternToTest = null
         val expectedResult = GetValidSearchPatternUseCase.PatternValidationError.NullOrEmptyPattern
 
-        getValidSearchPatternUseCase(
-            nullPatternToTest,
-            success = { throw RuntimeException("Test failed, success should not be triggered") },
-            error = { patternValidationError ->
+        getValidSearchPatternUseCase(nullPatternToTest).fold(
+            ifRight = { throw RuntimeException("Test failed, success should not be triggered") },
+            ifLeft = { patternValidationError ->
                 assertEquals(expectedResult, patternValidationError)
             })
 
         val emptyStringToTest = ""
 
-        getValidSearchPatternUseCase(
-            emptyStringToTest,
-            success = { throw RuntimeException("Test failed, success should not be triggered") },
-            error = { patternValidationError ->
+        getValidSearchPatternUseCase(emptyStringToTest).fold(
+            ifRight = { throw RuntimeException("Test failed, success should not be triggered") },
+            ifLeft = { patternValidationError ->
                 assertEquals(expectedResult, patternValidationError)
             })
     }

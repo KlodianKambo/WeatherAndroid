@@ -1,5 +1,6 @@
-package klodian.kambo.data
+package klodian.kambo.domain
 
+import arrow.core.Either
 import javax.inject.Inject
 
 class GetValidSearchPatternUseCase @Inject constructor() {
@@ -10,13 +11,9 @@ class GetValidSearchPatternUseCase @Inject constructor() {
         object NoParamsFound : PatternValidationError()
     }
 
-    operator fun invoke(
-        pattern: String?,
-        success: (validPattern: String) -> Unit,
-        error: (patternValidationError: PatternValidationError) -> Unit
-    ) {
+    operator fun invoke(pattern: String?): Either<PatternValidationError, String> {
         if (pattern.isNullOrEmpty()) {
-            error(PatternValidationError.NullOrEmptyPattern)
+            return Either.left(PatternValidationError.NullOrEmptyPattern)
         } else {
 
             val meaningfulCommaParams = pattern
@@ -25,16 +22,14 @@ class GetValidSearchPatternUseCase @Inject constructor() {
                 .filter { it.isNotEmpty() }
 
             if (meaningfulCommaParams.isEmpty()) {
-                error(PatternValidationError.NoParamsFound)
-                return
+                return Either.left(PatternValidationError.NoParamsFound)
             }
 
             if (meaningfulCommaParams.size > 3) {
-                error(PatternValidationError.TooManyCommaParams)
-                return
+                return Either.left(PatternValidationError.TooManyCommaParams)
             }
 
-            success(meaningfulCommaParams.joinToString(separator = ","))
+            return Either.right(meaningfulCommaParams.joinToString(separator = ","))
         }
     }
 }

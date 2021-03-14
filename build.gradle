@@ -35,6 +35,8 @@ ext {
                     kotlinTestImpl: "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
             ],
             main: [
+                    inject             : "javax.inject:javax.inject:1",
+                    arrow              : "io.arrow-kt:arrow-core:0.11.0",
                     kotlin             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
                     dagger             : "com.google.dagger:dagger:${versions.dagger}",
                     daggerCompiler     : "com.google.dagger:dagger-compiler:${versions.dagger}",
