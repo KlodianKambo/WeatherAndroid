@@ -44,6 +44,7 @@ dependencies {
     implementation project(path: ':data')
 
     implementation libs.main.kotlin
+    implementation libs.main.arrow
 
     // UI
     implementation "androidx.recyclerview:recyclerview:1.1.0"
