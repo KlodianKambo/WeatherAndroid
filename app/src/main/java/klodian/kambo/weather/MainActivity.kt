@@ -41,7 +41,24 @@ class MainActivity : BaseActivity() {
     }
 
     // Private fun
-    private fun showError(error: MainViewModel.SearchInputError) {
-        binding.textInputLayout.error = getString(error.errorMessageResId)
+    private fun showError(error: MainViewModel.SearchError) {
+        when (error) {
+            MainViewModel.SearchError.FieldCannotBeNull,
+            MainViewModel.SearchError.Only3ParamsAreAllowed,
+            MainViewModel.SearchError.PleaseInsertTheCity -> {
+                binding.textInputLayout.error = getString(error.errorMessageResId)
+            }
+
+            MainViewModel.SearchError.NoInternet -> {
+                // TODO
+            }
+            is MainViewModel.SearchError.WeatherNotFound -> {
+                // TODO
+            }
+            MainViewModel.SearchError.Generic -> {
+                // TODO
+            }
+        }
+
     }
 }

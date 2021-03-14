@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import klodian.kambo.domain.GetValidSearchPatternUseCase
+import klodian.kambo.domain.SafeRequestError
 import klodian.kambo.domain.Weather
 import klodian.kambo.domain.WeatherRepo
 import kotlinx.coroutines.Dispatchers
@@ -19,24 +20,29 @@ class MainViewModel @Inject constructor(
     private val getValidSearchPatternUseCase: GetValidSearchPatternUseCase
 ) : ViewModel() {
 
-    sealed class SearchInputError(@StringRes val errorMessageResId: Int) {
-        object FieldCannotBeNull : SearchInputError(R.string.search_input_error_empty)
-        object Only3ParamsAreAllowed : SearchInputError(R.string.search_input_error_too_many_params)
-        object PleaseInsertTheCity : SearchInputError(R.string.search_input_error_no_param_found)
+    sealed class SearchError(@StringRes val errorMessageResId: Int) {
+        object FieldCannotBeNull : SearchError(R.string.search_input_error_empty)
+        object Only3ParamsAreAllowed : SearchError(R.string.search_input_error_too_many_params)
+        object PleaseInsertTheCity : SearchError(R.string.search_input_error_no_param_found)
+
+        object NoInternet : SearchError(R.string.search_error_no_internet)
+        data class WeatherNotFound(val searchValue: String) : SearchError(R.string.search_error_not_found)
+
+        object Generic : SearchError(R.string.search_error_generic)
     }
 
-    private val weatherLiveData: MutableLiveData<Either<SearchInputError, List<UiWeather>>> =
+    private val weatherLiveData: MutableLiveData<Either<SearchError, List<UiWeather>>> =
         MutableLiveData()
 
-    fun getWeatherResult(): LiveData<Either<SearchInputError, List<UiWeather>>> = weatherLiveData
+    fun getWeatherResult(): LiveData<Either<SearchError, List<UiWeather>>> = weatherLiveData
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
                 viewModelScope.launch(Dispatchers.IO) {
                     weatherRepo.getWeather(correctedPattern, locale).fold(
-                        ifLeft = {
-                            // TODO handle user feedback
+                        ifLeft = { safeRequestError ->
+                            Either.left(safeRequestError.toSearchError(correctedPattern))
                         },
                         ifRight = { weatherList ->
                             weatherLiveData.postValue(
@@ -47,7 +53,7 @@ class MainViewModel @Inject constructor(
                 }
             },
             ifLeft = { patternValidationError ->
-                weatherLiveData.postValue(Either.left(patternValidationError.toSearchInputError()))
+                weatherLiveData.postValue(Either.left(patternValidationError.toSearchError()))
             })
     }
 
@@ -62,10 +68,18 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun GetValidSearchPatternUseCase.PatternValidationError.toSearchInputError(): SearchInputError =
+    private fun GetValidSearchPatternUseCase.PatternValidationError.toSearchError(): SearchError =
         when (this) {
-            GetValidSearchPatternUseCase.PatternValidationError.NullOrEmptyPattern -> SearchInputError.FieldCannotBeNull
-            GetValidSearchPatternUseCase.PatternValidationError.TooManyCommaParams -> SearchInputError.Only3ParamsAreAllowed
-            GetValidSearchPatternUseCase.PatternValidationError.NoParamsFound -> SearchInputError.PleaseInsertTheCity
+            GetValidSearchPatternUseCase.PatternValidationError.NullOrEmptyPattern -> SearchError.FieldCannotBeNull
+            GetValidSearchPatternUseCase.PatternValidationError.TooManyCommaParams -> SearchError.Only3ParamsAreAllowed
+            GetValidSearchPatternUseCase.PatternValidationError.NoParamsFound -> SearchError.PleaseInsertTheCity
         }
+
+    private fun SafeRequestError.toSearchError(searchedPattern: String) {
+        when (this) {
+            SafeRequestError.Generic -> SearchError.Generic
+            SafeRequestError.NetworkError -> SearchError.NoInternet
+            SafeRequestError.NotFound -> SearchError.WeatherNotFound(searchedPattern)
+        }
+    }
 }
