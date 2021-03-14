@@ -27,13 +27,16 @@ class MainActivity : BaseActivity() {
         with(binding) {
             weatherRecyclerView.layoutManager =
                 LinearLayoutManager(this.root.context, LinearLayoutManager.HORIZONTAL, false)
-
             weatherRecyclerView.adapter = weatherAdapter
 
             viewModel.getWeatherResult().observe(this@MainActivity) { result ->
                 result.fold(
                     ifLeft = { showError(it) },
                     ifRight = { showResults(it) })
+            }
+
+            viewModel.isLoading().observe(this@MainActivity) { isLoading ->
+                showLoading(isLoading)
             }
 
             cityEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
@@ -100,5 +103,9 @@ class MainActivity : BaseActivity() {
             weatherAdapter.submitList(emptyList())
             weatherRecyclerView.isVisible = false
         }
+    }
+
+    private fun showLoading(isEnabled: Boolean) {
+        binding.searchLoadingConstraintLayout.isVisible = isEnabled
     }
 }
