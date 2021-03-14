@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--    Search Input error-->
     <string name="search_input_error_empty">Il campo di ricerca non può essere vuoto</string>
     <string name="search_input_error_too_many_params">Il campo di ricerca deve contenere al massimo 3 parametri</string>
     <string name="search_input_error_no_param_found">Inserire il nome di una città</string>
+
+    <!--    Search result error-->
+    <string name="search_error_no_internet">Connettività assente, verificare la connettività ad internet</string>
+    <string name="search_error_not_found">Previsioni non trovate per la località \"%1$s\". Controllare di aver scritto correttamente il nome della località</string>
+    <string name="search_error_generic">Si è verificato un errore, provare più tardi</string>
+
+    <string name="city_name_state_country_hint">Città, stato, nazione</string>
 </resources>
