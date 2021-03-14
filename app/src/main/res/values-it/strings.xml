@@ -8,6 +8,8 @@
 
     <!--    Search result error-->
     <string name="search_error_no_internet">Connettività assente, verificare la connettività ad internet</string>
-    <string name="search_error_not_found">Previsioni non trovater per %1$s</string>
+    <string name="search_error_not_found">Previsioni non trovate per la località \"%1$s\". Controllare di aver scritto correttamente il nome della località</string>
     <string name="search_error_generic">Si è verificato un errore, provare più tardi</string>
+
+    <string name="city_name_state_country_hint">Città, stato, nazione</string>
 </resources>

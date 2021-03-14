@@ -8,7 +8,9 @@
 
     <!--    Search result error-->
     <string name="search_error_no_internet">Missing connectivity, No Internet</string>
-    <string name="search_error_not_found">Weather for %1$s not found</string>
+    <string name="search_error_not_found">Weather for the location \"%1$s\" not found. Please check that the city is correct.</string>
     <string name="search_error_generic">An error has occurred, retry later</string>
+
+    <string name="city_name_state_country_hint">City name, state, country</string>
 
 </resources>

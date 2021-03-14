@@ -1,5 +1,6 @@
 package klodian.kambo.weather
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,15 +21,21 @@ class MainViewModel @Inject constructor(
     private val getValidSearchPatternUseCase: GetValidSearchPatternUseCase
 ) : ViewModel() {
 
-    sealed class SearchError(@StringRes val errorMessageResId: Int) {
+    sealed class SearchError(
+        @StringRes val errorMessageResId: Int,
+        @DrawableRes val iconResId: Int? = null
+    ) {
         object FieldCannotBeNull : SearchError(R.string.search_input_error_empty)
         object Only3ParamsAreAllowed : SearchError(R.string.search_input_error_too_many_params)
         object PleaseInsertTheCity : SearchError(R.string.search_input_error_no_param_found)
 
-        object NoInternet : SearchError(R.string.search_error_no_internet)
-        data class WeatherNotFound(val searchValue: String) : SearchError(R.string.search_error_not_found)
+        object NoInternet :
+            SearchError(R.string.search_error_no_internet, R.drawable.ic_baseline_cloud_off)
 
-        object Generic : SearchError(R.string.search_error_generic)
+        data class WeatherNotFound(val searchValue: String) :
+            SearchError(R.string.search_error_not_found, R.drawable.ic_baseline_live_help)
+
+        object Generic : SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
     }
 
     private val weatherLiveData: MutableLiveData<Either<SearchError, List<UiWeather>>> =
@@ -42,7 +49,7 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     weatherRepo.getWeather(correctedPattern, locale).fold(
                         ifLeft = { safeRequestError ->
-                            Either.left(safeRequestError.toSearchError(correctedPattern))
+                            weatherLiveData.postValue(Either.left(safeRequestError.toSearchError(correctedPattern)))
                         },
                         ifRight = { weatherList ->
                             weatherLiveData.postValue(
@@ -75,8 +82,8 @@ class MainViewModel @Inject constructor(
             GetValidSearchPatternUseCase.PatternValidationError.NoParamsFound -> SearchError.PleaseInsertTheCity
         }
 
-    private fun SafeRequestError.toSearchError(searchedPattern: String) {
-        when (this) {
+    private fun SafeRequestError.toSearchError(searchedPattern: String): SearchError {
+        return when (this) {
             SafeRequestError.Generic -> SearchError.Generic
             SafeRequestError.NetworkError -> SearchError.NoInternet
             SafeRequestError.NotFound -> SearchError.WeatherNotFound(searchedPattern)
