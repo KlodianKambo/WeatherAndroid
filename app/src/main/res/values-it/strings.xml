@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_input_error_empty">Il campo di ricerca non può essere vuoto</string>
+    <string name="search_input_error_too_many_params">Il campo di ricerca deve contenere al massimo 3 parametri</string>
+    <string name="search_input_error_no_param_found">Inserire il nome di una città</string>
+</resources>
