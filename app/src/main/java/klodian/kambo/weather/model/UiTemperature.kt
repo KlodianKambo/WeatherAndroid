@@ -1,12 +1,12 @@
 package klodian.kambo.weather.model
 
 data class UiTemperature(
-    val temperature: Double,
-    val feelsLike: Double,
-    val minTemperature: Double,
-    val maxTemperature: Double,
-    val pressure: Double,
-    val humidity: Double,
+    val temperature: String,
+    val feelsLike: String,
+    val minTemperature: String,
+    val maxTemperature: String,
+    val pressure: String,
+    val humidity: String,
     val measurementUnit: TemperatureMeasurementUnit
 )
 

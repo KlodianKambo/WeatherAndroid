@@ -7,10 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import klodian.kambo.domain.GetValidSearchPatternUseCase
-import klodian.kambo.domain.SafeRequestError
-import klodian.kambo.domain.Weather
-import klodian.kambo.domain.WeatherRepo
+import klodian.kambo.domain.*
+import klodian.kambo.weather.model.TemperatureMeasurementUnit
+import klodian.kambo.weather.model.UiCompleteWeatherInfo
+import klodian.kambo.weather.model.UiTemperature
 import klodian.kambo.weather.model.UiWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,12 +40,12 @@ class MainViewModel @Inject constructor(
             SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
     }
 
-    private val weatherLiveData: MutableLiveData<Either<SearchError, List<UiWeather>>> =
+    private val weatherLiveData: MutableLiveData<Either<SearchError, UiCompleteWeatherInfo>> =
         MutableLiveData()
 
     private val loadingLiveData = MutableLiveData(false)
 
-    fun getWeatherResult(): LiveData<Either<SearchError, List<UiWeather>>> = weatherLiveData
+    fun getWeatherResult(): LiveData<Either<SearchError, UiCompleteWeatherInfo>> = weatherLiveData
     fun isLoading(): LiveData<Boolean> = loadingLiveData
 
     fun getWeather(pattern: String, locale: Locale) {
@@ -67,7 +67,10 @@ class MainViewModel @Inject constructor(
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    completeWeatherInfo.weather.map { weather -> weather.toUiWeather() }
+                                    UiCompleteWeatherInfo(
+                                        weather = completeWeatherInfo.weather.map { weather -> weather.toUiWeather() },
+                                        temperature = completeWeatherInfo.temperature.toUiTemperature()
+                                    )
                                 )
                             )
                         })
@@ -86,6 +89,18 @@ class MainViewModel @Inject constructor(
             title = weather,
             description = description,
             iconPath = iconName
+        )
+    }
+
+    private fun Temperature.toUiTemperature(): UiTemperature {
+        return UiTemperature(
+            temperature = String.format("%.1f", temperature),
+            maxTemperature = String.format("%.1f", maxTemperature),
+            minTemperature = String.format("%.1f", minTemperature),
+            feelsLike = String.format("%.1f", feelsLike),
+            pressure = pressure.toString(),
+            humidity = String.format("%.1f", humidity),
+            measurementUnit = TemperatureMeasurementUnit.Celsius
         )
     }
 

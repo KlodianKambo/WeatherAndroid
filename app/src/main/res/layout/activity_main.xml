@@ -67,21 +67,154 @@
             android:id="@+id/search_progress_bar"
             android:layout_width="@dimen/size80"
             android:layout_height="@dimen/size80"
-            app:layout_constraintVertical_bias=".46"
             android:src="@drawable/ic_baseline_error_outline"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".46" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/weather_recycler_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/results_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+        <TextView
+            android:id="@+id/temperature_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/size40"
+            android:gravity="center"
+            android:textSize="@dimen/font24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="18°C" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_thermometer"
+            app:layout_constraintEnd_toEndOf="@+id/temperature_text_view"
+            app:layout_constraintStart_toStartOf="@+id/temperature_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/temperature_text_view" />
+
+
+        <TextView
+            android:id="@+id/temperature_max_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/font18"
+            app:layout_constraintBottom_toBottomOf="@+id/temperature_text_view"
+            app:layout_constraintStart_toEndOf="@+id/temperature_text_view"
+            app:layout_constraintTop_toTopOf="@+id/temperature_text_view"
+            tools:text="18° C" />
+
+        <ImageView
+            android:id="@+id/temperature_max_image_view"
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_thermometer_chevron_up"
+            app:layout_constraintEnd_toEndOf="@+id/temperature_max_text_view"
+            app:layout_constraintStart_toEndOf="@+id/temperature_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/temperature_max_text_view" />
+
+
+        <TextView
+            android:id="@+id/temperature_min_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/font18"
+            app:layout_constraintBottom_toTopOf="@+id/temperature_max_image_view"
+            app:layout_constraintStart_toEndOf="@+id/temperature_max_text_view"
+            app:layout_constraintTop_toTopOf="@+id/temperature_max_text_view"
+            tools:text="18° C" />
+
+        <ImageView
+            android:id="@+id/temperature_min_image_view"
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_thermometer_chevron_down"
+            app:layout_constraintEnd_toEndOf="@+id/temperature_min_text_view"
+            app:layout_constraintStart_toEndOf="@+id/temperature_max_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/temperature_min_text_view" />
+
+        <TextView
+            android:id="@+id/temperature_felt_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/font18"
+            app:layout_constraintBottom_toTopOf="@+id/temperature_max_image_view"
+            app:layout_constraintStart_toEndOf="@+id/temperature_min_text_view"
+            app:layout_constraintTop_toTopOf="@+id/temperature_max_text_view"
+            tools:text="18° C" />
+
+        <TextView
+            android:id="@+id/temperature_felt_placeholder_text_view"
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_thermometer_chevron_down"
+            app:layout_constraintEnd_toEndOf="@+id/temperature_felt_text_view"
+            app:layout_constraintStart_toStartOf="@+id/temperature_felt_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/temperature_felt_text_view"
+            tools:text="felt" />
+
+        <TextView
+            android:id="@+id/humidity_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/font18"
+            app:layout_constraintEnd_toEndOf="@+id/temperature_text_view"
+            app:layout_constraintStart_toStartOf="@+id/temperature_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            tools:text="18° C" />
+
+        <ImageView
+            android:id="@+id/humidity_image_view"
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_water_percent"
+            app:layout_constraintEnd_toEndOf="@+id/humidity_text_view"
+            app:layout_constraintStart_toStartOf="@+id/humidity_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/humidity_text_view" />
+
+        <TextView
+            android:id="@+id/pressure_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/font18"
+            app:layout_constraintStart_toEndOf="@+id/humidity_text_view"
+            app:layout_constraintTop_toTopOf="@+id/humidity_text_view"
+            tools:text="18° C" />
+
+        <TextView
+            android:layout_width="@dimen/size24"
+            android:layout_height="@dimen/size24"
+            android:src="@drawable/ic_water_percent"
+            app:layout_constraintEnd_toEndOf="@+id/pressure_text_view"
+            app:layout_constraintStart_toEndOf="@+id/humidity_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/pressure_text_view"
+            tools:text="Bar" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/weather_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/humidity_image_view"
+            app:layout_constraintVertical_bias="0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import klodian.kambo.weather.adapter.WeatherRecyclerViewAdapter
 import klodian.kambo.weather.databinding.ActivityMainBinding
 import klodian.kambo.weather.extensions.hideKeyboard
+import klodian.kambo.weather.model.UiTemperature
 import klodian.kambo.weather.model.UiWeather
 import java.util.*
 
@@ -33,7 +34,10 @@ class MainActivity : BaseActivity() {
             viewModel.getWeatherResult().observe(this@MainActivity) { result ->
                 result.fold(
                     ifLeft = { showError(it) },
-                    ifRight = { showResults(it) })
+                    ifRight = {
+                        showResults(it.weather)
+                        setTemperature(it.temperature)
+                    })
             }
 
             viewModel.isLoading().observe(this@MainActivity) { isLoading ->
@@ -94,6 +98,7 @@ class MainActivity : BaseActivity() {
 
     private fun showResults(weatherList: List<UiWeather>) {
         with(binding) {
+            resultsConstraintLayout.isVisible = true
             weatherAdapter.submitList(weatherList)
             weatherRecyclerView.isVisible = true
         }
@@ -101,6 +106,7 @@ class MainActivity : BaseActivity() {
 
     private fun hideResults() {
         with(binding) {
+            resultsConstraintLayout.isVisible = false
             weatherAdapter.submitList(emptyList())
             weatherRecyclerView.isVisible = false
         }
@@ -108,5 +114,16 @@ class MainActivity : BaseActivity() {
 
     private fun showLoading(isEnabled: Boolean) {
         binding.searchLoadingConstraintLayout.isVisible = isEnabled
+    }
+
+    private fun setTemperature(uiTemperature: UiTemperature) {
+        with(binding) {
+            temperatureTextView.text = uiTemperature.temperature
+            temperatureMaxTextView.text = uiTemperature.maxTemperature
+            temperatureMinTextView.text = uiTemperature.minTemperature
+            temperatureFeltTextView.text = uiTemperature.feelsLike
+            humidityTextView.text = uiTemperature.humidity
+            pressureTextView.text = uiTemperature.pressure
+        }
     }
 }
