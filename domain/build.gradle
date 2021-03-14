@@ -11,5 +11,19 @@ java {
 
 dependencies {
     implementation libs.main.kotlin
+
+    implementation libs.main.arrow
+    implementation libs.main.inject
+
+    // Test
+    testImplementation libs.test.kotlinTest
+    testImplementation libs.test.kotlinTestImpl
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
