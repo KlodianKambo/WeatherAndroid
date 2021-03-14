@@ -32,12 +32,18 @@ class MainViewModel @Inject constructor(
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
-            ifRight = {
+            ifRight = { correctedPattern ->
                 viewModelScope.launch(Dispatchers.IO) {
-                    weatherLiveData.postValue(
-                        Either.right(weatherRepo.getWeather(pattern.trim(), locale)
-                            .map { it.toUiWeather() })
-                    )
+                    weatherRepo.getWeather(correctedPattern, locale).fold(
+                        ifLeft = {
+                            // TODO handle user feedback
+                        },
+                        ifRight = { weatherList ->
+                            weatherLiveData.postValue(
+                                Either.right(
+                                    weatherList.map { weather -> weather.toUiWeather() })
+                            )
+                        })
                 }
             },
             ifLeft = { patternValidationError ->
