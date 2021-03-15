@@ -14,6 +14,9 @@ import klodian.kambo.weather.model.UiTemperature
 import klodian.kambo.weather.model.UiWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 import javax.inject.Inject
 
@@ -40,19 +43,26 @@ class MainViewModel @Inject constructor(
             SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
     }
 
+    private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     private val weatherLiveData: MutableLiveData<Either<SearchError, UiCompleteWeatherInfo>> =
         MutableLiveData()
+
+    private val welcomeEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
+
+    private val temperatureLiveData: MutableLiveData<TemperatureMeasurementUnit> =
+        MutableLiveData(TemperatureMeasurementUnit.Celsius)
 
     private val loadingLiveData = MutableLiveData(false)
 
     fun getWeatherResult(): LiveData<Either<SearchError, UiCompleteWeatherInfo>> = weatherLiveData
     fun isLoading(): LiveData<Boolean> = loadingLiveData
+    fun isWelcomeEnabled(): LiveData<Boolean> = welcomeEnabled
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
                 loadingLiveData.postValue(true)
-
+                welcomeEnabled.postValue(false)
                 viewModelScope.launch(Dispatchers.IO) {
                     weatherRepo.getWeather(correctedPattern, locale).fold(
                         ifLeft = { safeRequestError ->
@@ -67,10 +77,7 @@ class MainViewModel @Inject constructor(
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    UiCompleteWeatherInfo(
-                                        weather = completeWeatherInfo.weather.map { weather -> weather.toUiWeather() },
-                                        temperature = completeWeatherInfo.temperature.toUiTemperature()
-                                    )
+                                    completeWeatherInfo.toUiCompleteWeatherInfo(correctedPattern)
                                 )
                             )
                         })
@@ -93,14 +100,24 @@ class MainViewModel @Inject constructor(
     }
 
     private fun Temperature.toUiTemperature(): UiTemperature {
+        val temperatureUnit =
+            (temperatureLiveData.value ?: TemperatureMeasurementUnit.Celsius).symbol
         return UiTemperature(
-            temperature = String.format("%.1f", temperature),
-            maxTemperature = String.format("%.1f", maxTemperature),
-            minTemperature = String.format("%.1f", minTemperature),
-            feelsLike = String.format("%.1f", feelsLike),
+            temperature = String.format("%.1f°$temperatureUnit", temperature),
+            maxTemperature = String.format("%.1f°$temperatureUnit", maxTemperature),
+            minTemperature = String.format("%.1f°$temperatureUnit", minTemperature),
+            feelsLike = String.format("%.1f°$temperatureUnit", feelsLike),
             pressure = pressure.toString(),
-            humidity = String.format("%.1f", humidity),
-            measurementUnit = TemperatureMeasurementUnit.Celsius
+            humidity = String.format("%.1f%%", humidity),
+        )
+    }
+
+    private fun CompleteWeatherInfo.toUiCompleteWeatherInfo(cityName: String): UiCompleteWeatherInfo {
+        return UiCompleteWeatherInfo(
+            weather = weather.map { weather -> weather.toUiWeather() },
+            temperature = temperature.toUiTemperature(),
+            cityNameResult = cityName,
+            displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
         )
     }
 

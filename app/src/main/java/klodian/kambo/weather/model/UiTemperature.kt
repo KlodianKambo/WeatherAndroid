@@ -6,11 +6,10 @@ data class UiTemperature(
     val minTemperature: String,
     val maxTemperature: String,
     val pressure: String,
-    val humidity: String,
-    val measurementUnit: TemperatureMeasurementUnit
+    val humidity: String
 )
 
-sealed class TemperatureMeasurementUnit {
-    object Fahrenheit : TemperatureMeasurementUnit()
-    object Celsius : TemperatureMeasurementUnit()
+sealed class TemperatureMeasurementUnit(val symbol: String) {
+    object Fahrenheit : TemperatureMeasurementUnit("F")
+    object Celsius : TemperatureMeasurementUnit("C")
 }

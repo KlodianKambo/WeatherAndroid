@@ -6,7 +6,9 @@
     <dimen name="size60">60dp</dimen>
     <dimen name="size80">80dp</dimen>
     <dimen name="size24">24dp</dimen>
-    
+
     <dimen name="font24">24sp</dimen>
     <dimen name="font18">18sp</dimen>
+    <dimen name="size8">8dp</dimen>
+    <dimen name="font16">16sp</dimen>
 </resources>
