@@ -7,12 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import klodian.kambo.domain.GetValidSearchPatternUseCase
-import klodian.kambo.domain.SafeRequestError
-import klodian.kambo.domain.Weather
-import klodian.kambo.domain.WeatherRepo
+import klodian.kambo.domain.*
+import klodian.kambo.weather.model.TemperatureMeasurementUnit
+import klodian.kambo.weather.model.UiCompleteWeatherInfo
+import klodian.kambo.weather.model.UiTemperature
+import klodian.kambo.weather.model.UiWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 import javax.inject.Inject
 
@@ -39,19 +43,26 @@ class MainViewModel @Inject constructor(
             SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
     }
 
-    private val weatherLiveData: MutableLiveData<Either<SearchError, List<UiWeather>>> =
+    private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+    private val weatherLiveData: MutableLiveData<Either<SearchError, UiCompleteWeatherInfo>> =
         MutableLiveData()
+
+    private val welcomeEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
+
+    private val temperatureLiveData: MutableLiveData<TemperatureMeasurementUnit> =
+        MutableLiveData(TemperatureMeasurementUnit.Celsius)
 
     private val loadingLiveData = MutableLiveData(false)
 
-    fun getWeatherResult(): LiveData<Either<SearchError, List<UiWeather>>> = weatherLiveData
+    fun getWeatherResult(): LiveData<Either<SearchError, UiCompleteWeatherInfo>> = weatherLiveData
     fun isLoading(): LiveData<Boolean> = loadingLiveData
+    fun isWelcomeEnabled(): LiveData<Boolean> = welcomeEnabled
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
                 loadingLiveData.postValue(true)
-
+                welcomeEnabled.postValue(false)
                 viewModelScope.launch(Dispatchers.IO) {
                     weatherRepo.getWeather(correctedPattern, locale).fold(
                         ifLeft = { safeRequestError ->
@@ -62,11 +73,11 @@ class MainViewModel @Inject constructor(
                                 )
                             )
                         },
-                        ifRight = { weatherList ->
+                        ifRight = { completeWeatherInfo ->
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    weatherList.map { weather -> weather.toUiWeather() }
+                                    completeWeatherInfo.toUiCompleteWeatherInfo(correctedPattern)
                                 )
                             )
                         })
@@ -85,6 +96,28 @@ class MainViewModel @Inject constructor(
             title = weather,
             description = description,
             iconPath = iconName
+        )
+    }
+
+    private fun Temperature.toUiTemperature(): UiTemperature {
+        val temperatureUnit =
+            (temperatureLiveData.value ?: TemperatureMeasurementUnit.Celsius).symbol
+        return UiTemperature(
+            temperature = String.format("%.1f°$temperatureUnit", temperature),
+            maxTemperature = String.format("%.1f°$temperatureUnit", maxTemperature),
+            minTemperature = String.format("%.1f°$temperatureUnit", minTemperature),
+            feelsLike = String.format("%.1f°$temperatureUnit", feelsLike),
+            pressure = pressure.toString(),
+            humidity = String.format("%.1f%%", humidity),
+        )
+    }
+
+    private fun CompleteWeatherInfo.toUiCompleteWeatherInfo(cityName: String): UiCompleteWeatherInfo {
+        return UiCompleteWeatherInfo(
+            weather = weather.map { weather -> weather.toUiWeather() },
+            temperature = temperature.toUiTemperature(),
+            cityNameResult = cityName,
+            displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
         )
     }
 

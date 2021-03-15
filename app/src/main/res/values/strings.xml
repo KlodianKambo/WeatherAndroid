@@ -13,4 +13,10 @@
 
     <string name="city_name_state_country_hint">City name, state, country</string>
 
+    <string name="feels_like">Feels Like</string>
+    <string name="Pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
+    <string name="welcome_title">What\'s the weather like? \nTo start type the name of the city</string>
+    <string name="welcome_message">For example Huntsville or Huntsville, tx, us</string>
+
 </resources>

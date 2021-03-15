@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import klodian.kambo.weather.adapter.WeatherRecyclerViewAdapter
 import klodian.kambo.weather.databinding.ActivityMainBinding
 import klodian.kambo.weather.extensions.hideKeyboard
+import klodian.kambo.weather.model.UiCompleteWeatherInfo
+import klodian.kambo.weather.model.UiTemperature
+import klodian.kambo.weather.model.UiWeather
 import java.util.*
 
 
@@ -25,23 +28,28 @@ class MainActivity : BaseActivity() {
         viewModel = getViewModel()
 
         with(binding) {
-            weatherRecyclerView.layoutManager =
-                LinearLayoutManager(this.root.context, LinearLayoutManager.HORIZONTAL, false)
+            weatherRecyclerView.layoutManager = LinearLayoutManager(this.root.context)
             weatherRecyclerView.adapter = weatherAdapter
 
             viewModel.getWeatherResult().observe(this@MainActivity) { result ->
                 result.fold(
                     ifLeft = { showError(it) },
-                    ifRight = { showResults(it) })
+                    ifRight = { showResult(it) })
+            }
+
+            viewModel.isWelcomeEnabled().observe(this@MainActivity) { isWelcomeEnabled ->
+                setWelcomeEnabled(isWelcomeEnabled)
             }
 
             viewModel.isLoading().observe(this@MainActivity) { isLoading ->
+                if (isLoading) {
+                    cityEditText.hideKeyboard()
+                }
                 showLoading(isLoading)
             }
 
             cityEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    v.hideKeyboard()
                     hideResults()
                     clearErrors()
                     viewModel.getWeather(cityEditText.text.toString(), Locale.getDefault())
@@ -91,8 +99,18 @@ class MainActivity : BaseActivity() {
         binding.textInputLayout.error = getString(error)
     }
 
-    private fun showResults(weatherList: List<UiWeather>) {
+    private fun showResult(completeWeatherInfo: UiCompleteWeatherInfo) {
         with(binding) {
+            showWeather(completeWeatherInfo.weather)
+            showTemperature(completeWeatherInfo.temperature)
+            resultCityTextView.text = completeWeatherInfo.cityNameResult
+            resultDateTextView.text = completeWeatherInfo.displayableTimeStamp
+        }
+    }
+
+    private fun showWeather(weatherList: List<UiWeather>) {
+        with(binding) {
+            resultsContainer.isVisible = true
             weatherAdapter.submitList(weatherList)
             weatherRecyclerView.isVisible = true
         }
@@ -100,6 +118,7 @@ class MainActivity : BaseActivity() {
 
     private fun hideResults() {
         with(binding) {
+            resultsContainer.isVisible = false
             weatherAdapter.submitList(emptyList())
             weatherRecyclerView.isVisible = false
         }
@@ -107,5 +126,20 @@ class MainActivity : BaseActivity() {
 
     private fun showLoading(isEnabled: Boolean) {
         binding.searchLoadingConstraintLayout.isVisible = isEnabled
+    }
+
+    private fun setWelcomeEnabled(isEnabled: Boolean) {
+        binding.welcomeConstraintLayout.isVisible = isEnabled
+    }
+
+    private fun showTemperature(uiTemperature: UiTemperature) {
+        with(binding) {
+            temperatureTextView.text = uiTemperature.temperature
+            temperatureMaxTextView.text = uiTemperature.maxTemperature
+            temperatureMinTextView.text = uiTemperature.minTemperature
+            temperatureFeltTextView.text = uiTemperature.feelsLike
+            humidityTextView.text = uiTemperature.humidity
+            pressureTextView.text = uiTemperature.pressure
+        }
     }
 }

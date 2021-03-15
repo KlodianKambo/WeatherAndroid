@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import klodian.kambo.weather.R
-import klodian.kambo.weather.UiWeather
+import klodian.kambo.weather.model.UiWeather
 import klodian.kambo.weather.databinding.ItemWeatherBinding
 
 class WeatherRecyclerViewAdapter : ListAdapter<UiWeather, WeatherViewHolder>(WeatherDiffUtils) {

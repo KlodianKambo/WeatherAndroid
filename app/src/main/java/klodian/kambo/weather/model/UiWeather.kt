@@ -1,4 +1,4 @@
-package klodian.kambo.weather
+package klodian.kambo.weather.model
 
 data class UiWeather(
     val id: Long,

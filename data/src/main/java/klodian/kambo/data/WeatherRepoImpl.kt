@@ -1,9 +1,7 @@
 package klodian.kambo.data
 
 import arrow.core.Either
-import klodian.kambo.domain.SafeRequestError
-import klodian.kambo.domain.Weather
-import klodian.kambo.domain.WeatherRepo
+import klodian.kambo.domain.*
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject
@@ -16,11 +14,11 @@ class WeatherRepoImpl @Inject constructor(
     override suspend fun getWeather(
         cityName: String,
         locale: Locale
-    ): Either<SafeRequestError, List<Weather>> = coroutineScope {
+    ): Either<SafeRequestError, CompleteWeatherInfo> = coroutineScope {
         performSafeRequest {
-            weatherApi.getWeather(cityName, locale.language)
-                .weather
-                .map { it.toWeather() }
+            val weatherResponse = weatherApi.getWeather(cityName, locale.language)
+            CompleteWeatherInfo(temperature = weatherResponse.main.toTemperature(),
+                weather = weatherResponse.weather.map { it.toWeather() })
         }
     }
 
@@ -31,5 +29,9 @@ class WeatherRepoImpl @Inject constructor(
             description = description,
             iconName = getIconPath(icon)
         )
+    }
+
+    private fun TemperatureDto.toTemperature(): Temperature {
+        return Temperature(temp, feelsLike, minTemp, maxTemp, pressure, humidity)
     }
 }
