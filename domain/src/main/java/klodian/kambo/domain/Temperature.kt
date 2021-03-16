@@ -6,5 +6,6 @@ data class Temperature(
     val minTemperature: Double,
     val maxTemperature: Double,
     val pressure: Double,
-    val humidity: Double
+    val humidity: Double,
+    val temperatureMeasurementUnit: TemperatureMeasurementUnit
 )

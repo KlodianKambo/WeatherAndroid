@@ -137,7 +137,7 @@
 
             <TextView
                 android:id="@+id/result_city_text_view"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/size16"
                 android:ellipsize="end"
@@ -145,7 +145,7 @@
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/font18"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/main_degree_fab"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Marostica" />
@@ -154,6 +154,7 @@
                 android:id="@+id/result_date_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size8"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@android:color/black"
@@ -162,6 +163,18 @@
                 app:layout_constraintStart_toStartOf="@+id/result_city_text_view"
                 app:layout_constraintTop_toBottomOf="@+id/result_city_text_view"
                 tools:text="15 March, 2021" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/main_degree_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size16"
+                android:src="@drawable/ic_temperature_fahrenheit"
+                app:fabCustomSize="@dimen/size40"
+                app:layout_constraintBottom_toBottomOf="@+id/result_date_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/result_city_text_view" />
+
 
             <LinearLayout
                 android:id="@+id/temperature_linear_layout"
