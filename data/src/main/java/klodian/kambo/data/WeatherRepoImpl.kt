@@ -11,13 +11,26 @@ class WeatherRepoImpl @Inject constructor(
     private val getIconPath: GetIconPath
 ) : WeatherRepo {
 
+    companion object{
+        private const val TEMPERATURE_UNIT_IMPERIAL ="imperial"
+        private const val TEMPERATURE_UNIT_METRIC ="metric"
+    }
     override suspend fun getWeather(
         cityName: String,
-        locale: Locale
+        locale: Locale,
+        measurementUnit: TemperatureMeasurementUnit
     ): Either<SafeRequestError, CompleteWeatherInfo> = coroutineScope {
+
+        val unit = when (measurementUnit) {
+            TemperatureMeasurementUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
+            TemperatureMeasurementUnit.Celsius -> TEMPERATURE_UNIT_METRIC
+        }
+
         performSafeRequest {
-            val weatherResponse = weatherApi.getWeather(cityName, locale.language)
-            CompleteWeatherInfo(temperature = weatherResponse.main.toTemperature(),
+            val weatherResponse = weatherApi
+                .getWeather(cityNamePattern = cityName, language = locale.language, units = unit)
+
+            CompleteWeatherInfo(temperature = weatherResponse.main.toTemperature(measurementUnit),
                 weather = weatherResponse.weather.map { it.toWeather() })
         }
     }
@@ -31,7 +44,7 @@ class WeatherRepoImpl @Inject constructor(
         )
     }
 
-    private fun TemperatureDto.toTemperature(): Temperature {
-        return Temperature(temp, feelsLike, minTemp, maxTemp, pressure, humidity)
+    private fun TemperatureDto.toTemperature(measurementUnit: TemperatureMeasurementUnit): Temperature {
+        return Temperature(temp, feelsLike, minTemp, maxTemp, pressure, humidity, measurementUnit)
     }
 }

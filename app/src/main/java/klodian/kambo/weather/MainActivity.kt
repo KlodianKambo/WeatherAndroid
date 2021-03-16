@@ -48,6 +48,14 @@ class MainActivity : BaseActivity() {
                 showLoading(isLoading)
             }
 
+            viewModel.getTemperature().observe(this@MainActivity) {
+                mainDegreeFab.setImageResource(it.iconResId)
+            }
+
+            mainDegreeFab.setOnClickListener {
+                viewModel.toggleTemperature()
+            }
+
             cityEditText.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     hideResults()
@@ -134,10 +142,10 @@ class MainActivity : BaseActivity() {
 
     private fun showTemperature(uiTemperature: UiTemperature) {
         with(binding) {
-            temperatureTextView.text = uiTemperature.temperature
-            temperatureMaxTextView.text = uiTemperature.maxTemperature
-            temperatureMinTextView.text = uiTemperature.minTemperature
-            temperatureFeltTextView.text = uiTemperature.feelsLike
+            temperatureTextView.text = uiTemperature.displayableTemperature
+            temperatureMaxTextView.text = uiTemperature.displayableMaxTemperature
+            temperatureMinTextView.text = uiTemperature.displayableMinTemperature
+            temperatureFeltTextView.text = uiTemperature.displayableFeelsLike
             humidityTextView.text = uiTemperature.humidity
             pressureTextView.text = uiTemperature.pressure
         }
