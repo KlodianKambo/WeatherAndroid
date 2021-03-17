@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
     <ImageView
         android:id="@+id/item_weather_icon_image_view"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/size48"
+        android:layout_height="@dimen/size48"
         android:layout_margin="@dimen/size16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,22 +16,29 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_weather_title"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/size0"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/size16"
+        android:layout_marginEnd="@dimen/size16"
+        android:ellipsize="end"
         android:gravity="start"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_weather_icon_image_view"
         app:layout_constraintTop_toTopOf="@+id/item_weather_icon_image_view"
         tools:text="Title" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:layout_marginTop="@dimen/size8"
         android:id="@+id/item_weather_description"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/size0"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size4"
+        android:ellipsize="end"
         android:gravity="start"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="@+id/item_weather_title"
         app:layout_constraintStart_toStartOf="@+id/item_weather_title"
         app:layout_constraintTop_toBottomOf="@+id/item_weather_title"
         tools:text="Description" />

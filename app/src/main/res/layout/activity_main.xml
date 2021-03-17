@@ -30,7 +30,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_error_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -62,7 +62,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/welcome_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -108,7 +108,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_loading_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -129,7 +129,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/results_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
@@ -141,7 +141,7 @@
 
             <TextView
                 android:id="@+id/result_city_text_view"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/size0"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/size16"
                 android:ellipsize="end"
@@ -156,7 +156,7 @@
 
             <TextView
                 android:id="@+id/result_date_text_view"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/size0"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size8"
                 android:ellipsize="end"
@@ -192,7 +192,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/result_date_text_view">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -218,7 +218,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -242,7 +242,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -277,7 +277,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/temperature_linear_layout">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -304,7 +304,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -331,7 +331,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
