@@ -1,4 +1,4 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.model
 
 data class CompleteWeatherInfo(
     val weather: List<Weather>,

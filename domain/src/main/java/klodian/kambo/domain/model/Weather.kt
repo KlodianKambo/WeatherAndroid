@@ -1,4 +1,4 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.model
 
 data class Weather(
     val id: Long,

@@ -6,7 +6,12 @@ import klodian.kambo.data.api.WeatherApi
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
 import klodian.kambo.data.utils.performSafeRequest
-import klodian.kambo.domain.*
+import klodian.kambo.domain.model.CompleteWeatherInfo
+import klodian.kambo.domain.model.SafeRequestError
+import klodian.kambo.domain.model.Temperature
+import klodian.kambo.domain.model.TemperatureMeasurementUnit
+import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject

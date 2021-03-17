@@ -4,7 +4,14 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import arrow.core.Either
-import klodian.kambo.domain.*
+import klodian.kambo.domain.model.CompleteWeatherInfo
+import klodian.kambo.domain.model.SafeRequestError
+import klodian.kambo.domain.model.Temperature
+import klodian.kambo.domain.model.TemperatureMeasurementUnit
+import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.repositories.WeatherRepo
+import klodian.kambo.domain.usecases.GetTemperatureUseCase
+import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import klodian.kambo.weather.R
 import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
 import klodian.kambo.weather.ui.model.UiTemperature

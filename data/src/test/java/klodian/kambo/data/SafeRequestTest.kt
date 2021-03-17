@@ -2,7 +2,7 @@ package klodian.kambo.data
 
 import arrow.core.Either
 import klodian.kambo.data.utils.performSafeRequest
-import klodian.kambo.domain.SafeRequestError
+import klodian.kambo.domain.model.SafeRequestError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType

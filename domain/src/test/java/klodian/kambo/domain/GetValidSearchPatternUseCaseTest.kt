@@ -1,5 +1,6 @@
 package klodian.kambo.domain
 
+import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
