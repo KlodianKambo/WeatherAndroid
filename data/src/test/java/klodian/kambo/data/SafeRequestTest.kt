@@ -1,6 +1,7 @@
 package klodian.kambo.data
 
 import arrow.core.Either
+import klodian.kambo.data.utils.performSafeRequest
 import klodian.kambo.domain.SafeRequestError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

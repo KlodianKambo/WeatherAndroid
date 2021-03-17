@@ -1,4 +1,4 @@
-package klodian.kambo.data
+package klodian.kambo.data.utils
 
 import arrow.core.Either
 import klodian.kambo.domain.SafeRequestError

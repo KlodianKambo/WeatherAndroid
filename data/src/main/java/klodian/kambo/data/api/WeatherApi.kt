@@ -1,5 +1,6 @@
-package klodian.kambo.data
+package klodian.kambo.data.api
 
+import klodian.kambo.data.model.WeatherResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
