@@ -11,5 +11,5 @@ interface WeatherRepo {
         cityName: String,
         locale: Locale,
         measurementUnit: TemperatureMeasurementUnit
-    ): Either<SafeRequestError, CompleteWeatherInfo>
+    ): Either<SafeRequestError, List<CompleteWeatherInfo>>
 }

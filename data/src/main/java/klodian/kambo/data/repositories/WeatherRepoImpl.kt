@@ -6,11 +6,7 @@ import klodian.kambo.data.api.WeatherApi
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
 import klodian.kambo.data.utils.performSafeRequest
-import klodian.kambo.domain.model.CompleteWeatherInfo
-import klodian.kambo.domain.model.SafeRequestError
-import klodian.kambo.domain.model.Temperature
-import klodian.kambo.domain.model.TemperatureMeasurementUnit
-import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.model.*
 import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.coroutineScope
 import java.util.*
@@ -21,15 +17,16 @@ class WeatherRepoImpl @Inject constructor(
     private val getIconPathUseCase: GetIconPathUseCase
 ) : WeatherRepo {
 
-    companion object{
-        private const val TEMPERATURE_UNIT_IMPERIAL ="imperial"
-        private const val TEMPERATURE_UNIT_METRIC ="metric"
+    companion object {
+        private const val TEMPERATURE_UNIT_IMPERIAL = "imperial"
+        private const val TEMPERATURE_UNIT_METRIC = "metric"
     }
+
     override suspend fun getWeather(
         cityName: String,
         locale: Locale,
         measurementUnit: TemperatureMeasurementUnit
-    ): Either<SafeRequestError, CompleteWeatherInfo> = coroutineScope {
+    ): Either<SafeRequestError, List<CompleteWeatherInfo>> = coroutineScope {
 
         val unit = when (measurementUnit) {
             TemperatureMeasurementUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
@@ -37,11 +34,15 @@ class WeatherRepoImpl @Inject constructor(
         }
 
         performSafeRequest {
-            val weatherResponse = weatherApi
-                .getWeather(cityNamePattern = cityName, language = locale.language, units = unit)
-
-            CompleteWeatherInfo(temperature = weatherResponse.main.toTemperature(measurementUnit),
-                weather = weatherResponse.weather.map { it.toWeather() })
+            weatherApi.getWeather(
+                cityNamePattern = cityName,
+                language = locale.language,
+                units = unit
+            ).list.map { weatherResponse ->
+                CompleteWeatherInfo(
+                    temperature = weatherResponse.main.toTemperature(measurementUnit),
+                    weather = weatherResponse.weather.map { it.toWeather() })
+            }
         }
     }
 

@@ -2,6 +2,10 @@ package klodian.kambo.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class ForecastResponseDto(
+    val list: List<WeatherResponseDto>,
+)
+
 data class WeatherResponseDto(
     val weather: List<WeatherDto>,
     @SerializedName("main")

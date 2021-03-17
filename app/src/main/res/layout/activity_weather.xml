@@ -8,10 +8,10 @@
     tools:context=".ui.weather.WeatherActivity">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_marginTop="@dimen/size16"
         android:id="@+id/textInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size16"
         android:hint="@string/city_name_state_country_hint"
         app:endIconMode="clear_text"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,12 +85,12 @@
             android:layout_width="@dimen/size80"
             android:layout_height="@dimen/size80"
             android:src="@drawable/ic_weather_partly_snowy_rainy"
-            app:tint="@color/light_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.3" />
+            app:layout_constraintVertical_bias="0.3"
+            app:tint="@color/light_blue" />
 
         <TextView
             android:id="@+id/welcome_message_text_view"
@@ -126,250 +126,68 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/results_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/size0"
+        android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
         tools:visibility="visible">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <TextView
+            android:id="@+id/result_city_text_view"
+            android:layout_width="@dimen/size0"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size16"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/font18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/main_degree_fab"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Marostica" />
+
+        <TextView
+            android:id="@+id/result_date_text_view"
+            android:layout_width="@dimen/size0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size8"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/result_city_text_view"
+            app:layout_constraintStart_toStartOf="@+id/result_city_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/result_city_text_view"
+            tools:text="15 March, 2021" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/main_degree_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size16"
+            android:backgroundTint="@color/yellow"
+            android:src="@drawable/ic_temperature_fahrenheit"
+            android:tintMode="src_in"
+            app:fabCustomSize="@dimen/size40"
+            app:layout_constraintBottom_toBottomOf="@+id/result_date_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/result_city_text_view"
+            app:tint="@color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/weather_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/size16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/result_date_text_view"
+            app:layout_constraintVertical_bias="0"
+            tools:layout_editor_absoluteX="16dp" />
 
-            <TextView
-                android:id="@+id/result_city_text_view"
-                android:layout_width="@dimen/size0"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/size16"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/font18"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/main_degree_fab"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Marostica" />
-
-            <TextView
-                android:id="@+id/result_date_text_view"
-                android:layout_width="@dimen/size0"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size8"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/result_city_text_view"
-                app:layout_constraintStart_toStartOf="@+id/result_city_text_view"
-                app:layout_constraintTop_toBottomOf="@+id/result_city_text_view"
-                tools:text="15 March, 2021" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/main_degree_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/size16"
-                android:backgroundTint="@color/yellow"
-                android:tintMode="src_in"
-                android:src="@drawable/ic_temperature_fahrenheit"
-                app:fabCustomSize="@dimen/size40"
-                app:layout_constraintBottom_toBottomOf="@+id/result_date_text_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/result_city_text_view"
-                app:tint="@color/white" />
-
-
-            <LinearLayout
-                android:id="@+id/temperature_linear_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/size16"
-                android:layout_marginTop="@dimen/size16"
-                app:layout_constraintTop_toBottomOf="@+id/result_date_text_view">
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/temperature_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18°C" />
-
-                    <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="@dimen/size24"
-                        android:layout_height="@dimen/size24"
-                        android:layout_marginTop="@dimen/size8"
-                        android:src="@drawable/ic_thermometer"
-                        app:tint="@android:color/darker_gray" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/temperature_max_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18° C" />
-
-                    <ImageView
-                        android:id="@+id/temperature_max_image_view"
-                        android:layout_width="@dimen/size24"
-                        android:layout_height="@dimen/size24"
-                        android:layout_marginTop="@dimen/size8"
-                        android:src="@drawable/ic_thermometer_chevron_up"
-                        app:tint="@android:color/holo_red_light" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/temperature_min_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18° C" />
-
-                    <ImageView
-                        android:id="@+id/temperature_min_image_view"
-                        android:layout_width="@dimen/size24"
-                        android:layout_height="@dimen/size24"
-                        android:layout_marginTop="@dimen/size8"
-                        android:src="@drawable/ic_thermometer_chevron_down"
-                        app:tint="@android:color/holo_blue_bright" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/pressure_humidity_felt_linear_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/size16"
-                android:layout_marginTop="@dimen/size24"
-                android:layout_marginEnd="@dimen/size16"
-                app:layout_constraintTop_toBottomOf="@+id/temperature_linear_layout">
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/temperature_felt_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18° C" />
-
-                    <TextView
-                        android:id="@+id/temperature_felt_placeholder_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size8"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:src="@drawable/ic_thermometer_chevron_down"
-                        android:text="@string/feels_like"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/humidity_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18° C" />
-
-                    <TextView
-                        android:id="@+id/humidity_image_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size8"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:src="@drawable/ic_water_percent"
-                        android:text="@string/humidity"
-                        android:textColor="@android:color/black" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="@dimen/size0"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/pressure_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textSize="@dimen/font18"
-                        tools:text="18° C" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/size8"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:src="@drawable/ic_water_percent"
-                        android:text="@string/Pressure"
-                        android:textColor="@android:color/black" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/weather_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/size16"
-                android:layout_marginTop="@dimen/size16"
-                android:layout_marginEnd="@dimen/size16"
-                app:layout_constraintTop_toBottomOf="@+id/pressure_humidity_felt_linear_layout"
-                app:layout_constraintVertical_bias="0" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

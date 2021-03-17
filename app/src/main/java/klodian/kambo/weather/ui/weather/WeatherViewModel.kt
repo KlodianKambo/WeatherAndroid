@@ -4,19 +4,12 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import arrow.core.Either
-import klodian.kambo.domain.model.CompleteWeatherInfo
-import klodian.kambo.domain.model.SafeRequestError
-import klodian.kambo.domain.model.Temperature
-import klodian.kambo.domain.model.TemperatureMeasurementUnit
-import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.model.*
 import klodian.kambo.domain.repositories.WeatherRepo
 import klodian.kambo.domain.usecases.GetTemperatureUseCase
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import klodian.kambo.weather.R
-import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.ui.model.UiTemperature
-import klodian.kambo.weather.ui.model.UiTemperatureMeasurementUnit
-import klodian.kambo.weather.ui.model.UiWeather
+import klodian.kambo.weather.ui.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -77,11 +70,7 @@ class WeatherViewModel @Inject constructor(
         weatherLiveData.value?.let {
             it.orNull()?.let { uiCompleteWeatherInfo ->
                 weatherLiveData.postValue(
-                    Either.right(
-                        uiCompleteWeatherInfo.copy(
-                            temperature = uiCompleteWeatherInfo.temperature.convertTo(newTempUnit)
-                        )
-                    )
+                    Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
                 )
             }
         }
@@ -115,15 +104,21 @@ class WeatherViewModel @Inject constructor(
                                 )
                             )
                         },
-                        ifRight = { completeWeatherInfo ->
+                        ifRight = { completeWeatherInfoList ->
                             val temperatureUnit =
                                 measurementUnitLiveData.value ?: TemperatureMeasurementUnit.Celsius
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
                                 Either.right(
-                                    completeWeatherInfo.toUiCompleteWeatherInfo(
-                                        correctedPattern,
-                                        temperatureUnit
+                                    UiCompleteWeatherInfo(
+                                        uiWeatherTemperatureList = completeWeatherInfoList.map { completeWeatherInfo ->
+                                            completeWeatherInfo.toUiWeatherTemperature(
+                                                temperatureUnit
+                                            )
+                                        },
+                                        cityNameResult = correctedPattern,
+                                        displayableTimeStamp = LocalDateTime.now()
+                                            .format(dateFormatter)
                                     )
                                 )
                             )
@@ -179,17 +174,14 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun CompleteWeatherInfo.toUiCompleteWeatherInfo(
-        cityName: String,
-        temperatureUnit: TemperatureMeasurementUnit
-    ): UiCompleteWeatherInfo {
-        return UiCompleteWeatherInfo(
-            weather = weather.map { weather -> weather.toUiWeather() },
-            temperature = temperature.toUiTemperature(temperatureUnit),
-            cityNameResult = cityName,
-            displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
+    private fun CompleteWeatherInfo.toUiWeatherTemperature(temperatureUnit: TemperatureMeasurementUnit): UiWeatherTemperature {
+        return UiWeatherTemperature(
+            id = UUID.randomUUID().toString(),
+            weather = weather.first().toUiWeather(),
+            temperature = temperature.toUiTemperature(temperatureUnit)
         )
     }
+
 
     private fun GetValidSearchPatternUseCase.PatternValidationError.toSearchError(): SearchError =
         when (this) {
@@ -208,5 +200,19 @@ class WeatherViewModel @Inject constructor(
 
     private fun Double.formatToOneDecimalTemperature(temperatureUnit: TemperatureMeasurementUnit): String {
         return String.format("%.1f°${temperatureUnit.symbol}", this)
+    }
+
+    private fun getUpdateTemperature(
+        uiCompleteWeatherInfo: UiCompleteWeatherInfo,
+        temperatureUnit: TemperatureMeasurementUnit
+    ): UiCompleteWeatherInfo {
+        return uiCompleteWeatherInfo.copy(
+            uiWeatherTemperatureList = uiCompleteWeatherInfo.uiWeatherTemperatureList.map { uiWeatherTemperature ->
+                uiWeatherTemperature.copy(
+                    temperature = uiWeatherTemperature
+                        .temperature.convertTo(temperatureUnit)
+                )
+            }
+        )
     }
 }

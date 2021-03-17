@@ -7,16 +7,25 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import klodian.kambo.weather.R
-import klodian.kambo.weather.ui.model.UiWeather
 import klodian.kambo.weather.databinding.ItemWeatherBinding
+import klodian.kambo.weather.ui.model.UiTemperature
+import klodian.kambo.weather.ui.model.UiWeatherTemperature
 
-class WeatherRecyclerViewAdapter : ListAdapter<UiWeather, WeatherViewHolder>(WeatherDiffUtils) {
-    object WeatherDiffUtils : DiffUtil.ItemCallback<UiWeather>() {
-        override fun areItemsTheSame(oldItem: UiWeather, newItem: UiWeather): Boolean {
+class WeatherRecyclerViewAdapter :
+    ListAdapter<UiWeatherTemperature, WeatherViewHolder>(WeatherDiffUtils) {
+
+    object WeatherDiffUtils : DiffUtil.ItemCallback<UiWeatherTemperature>() {
+        override fun areItemsTheSame(
+            oldItem: UiWeatherTemperature,
+            newItem: UiWeatherTemperature
+        ): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: UiWeather, newItem: UiWeather): Boolean {
+        override fun areContentsTheSame(
+            oldItem: UiWeatherTemperature,
+            newItem: UiWeatherTemperature
+        ): Boolean {
             return oldItem == newItem
         }
     }
@@ -37,10 +46,24 @@ class WeatherRecyclerViewAdapter : ListAdapter<UiWeather, WeatherViewHolder>(Wea
 class WeatherViewHolder(private val binding: ItemWeatherBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(uiWeather: UiWeather) {
-        binding.itemWeatherTitle.text = uiWeather.title
-        binding.itemWeatherDescription.text = uiWeather.description
-        Picasso.get().load(uiWeather.iconPath)
-            .into(binding.itemWeatherIconImageView)
+    fun bind(uiWeather: UiWeatherTemperature) {
+        with(uiWeather.weather) {
+            binding.itemWeatherTitle.text = title
+            binding.itemWeatherDescription.text = description
+            Picasso.get().load(iconPath).into(binding.itemWeatherIconImageView)
+        }
+
+        bindTemperature(uiWeather.temperature)
+    }
+
+    private fun bindTemperature(uiTemperature: UiTemperature) {
+        with(binding) {
+            temperatureTextView.text = uiTemperature.displayableTemperature
+            temperatureMaxTextView.text = uiTemperature.displayableMaxTemperature
+            temperatureMinTextView.text = uiTemperature.displayableMinTemperature
+            temperatureFeltTextView.text = uiTemperature.displayableFeelsLike
+            humidityTextView.text = uiTemperature.humidity
+            pressureTextView.text = uiTemperature.pressure
+        }
     }
 }
