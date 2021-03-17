@@ -1,5 +1,6 @@
 package klodian.kambo.weather
 
+import android.view.inputmethod.EditorInfo
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.typeText
@@ -10,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
+import klodian.kambo.weather.matchers.ImeOptionMatcher
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
@@ -42,6 +44,13 @@ class MainActivityTest {
     fun when_started_then_show_welcome() {
         onView(withId(R.id.welcome_constraint_layout))
             .check(matches(isCompletelyDisplayed()))
+    }
+
+    @Test
+    fun has_search_ime_option_when_keyboard_shown() {
+        onView(withId(R.id.city_edit_text))
+            .perform(typeText("Marostica"))
+            .check(matches(ImeOptionMatcher(EditorInfo.IME_ACTION_SEARCH)))
     }
 
     @Test
