@@ -10,6 +10,6 @@ interface WeatherApi {
         @Query("q") cityNamePattern: String,
         @Query("lang") language: String,
         @Query("cnt") limit: Int = 5,
-        @Query("units") units: String = "metric"
+        @Query("units") units: String
     ): WeatherResponseDto
 }
