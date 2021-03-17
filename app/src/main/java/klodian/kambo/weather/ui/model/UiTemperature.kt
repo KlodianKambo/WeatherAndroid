@@ -1,4 +1,4 @@
-package klodian.kambo.weather.model
+package klodian.kambo.weather.ui.model
 
 import androidx.annotation.DrawableRes
 import klodian.kambo.weather.R

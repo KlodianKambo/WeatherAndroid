@@ -1,5 +1,6 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.usecases
 
+import klodian.kambo.domain.model.TemperatureMeasurementUnit
 import javax.inject.Inject
 
 class GetTemperatureUseCase @Inject constructor() {

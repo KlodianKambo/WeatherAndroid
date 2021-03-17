@@ -1,4 +1,4 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.model
 
 sealed class SafeRequestError{
     object Generic : SafeRequestError()

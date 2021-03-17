@@ -12,6 +12,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import klodian.kambo.weather.matchers.ImeOptionMatcher
+import klodian.kambo.weather.ui.weather.WeatherActivity
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
@@ -21,11 +22,11 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class MainActivityTest {
+class WeatherActivityTest {
 
     @get:Rule
-    val testRules = ActivityTestRule(MainActivity::class.java)
-    private var activity: MainActivity? = null
+    val testRules = ActivityTestRule(WeatherActivity::class.java)
+    private var activity: WeatherActivity? = null
 
     private val device: UiDevice = UiDevice.getInstance(getInstrumentation())
 

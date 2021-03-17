@@ -1,4 +1,4 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.model
 
 sealed class TemperatureMeasurementUnit(val symbol: String) {
     object Fahrenheit : TemperatureMeasurementUnit("F")

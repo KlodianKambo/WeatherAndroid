@@ -3,7 +3,7 @@ package klodian.kambo.weather.di
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import klodian.kambo.weather.BaseActivity
-import klodian.kambo.weather.MainActivity
+import klodian.kambo.weather.ui.weather.WeatherActivity
 
 @Module(includes = [ViewModelBinderModule::class])
 abstract class ActivityModule {
@@ -14,5 +14,5 @@ abstract class ActivityModule {
 
     @ActivityScope
     @ContributesAndroidInjector
-    abstract fun contributesMainActivityInjector(): MainActivity
+    abstract fun contributesMainActivityInjector(): WeatherActivity
 }

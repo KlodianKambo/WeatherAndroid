@@ -1,4 +1,4 @@
-package klodian.kambo.domain
+package klodian.kambo.domain.usecases
 
 import arrow.core.Either
 import javax.inject.Inject

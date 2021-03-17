@@ -1,4 +1,4 @@
-package klodian.kambo.data
+package klodian.kambo.data.model
 
 data class WeatherDto(
     val id: Long,

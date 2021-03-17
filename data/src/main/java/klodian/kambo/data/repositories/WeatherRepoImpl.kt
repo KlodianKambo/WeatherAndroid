@@ -1,14 +1,24 @@
-package klodian.kambo.data
+package klodian.kambo.data.repositories
 
 import arrow.core.Either
-import klodian.kambo.domain.*
+import klodian.kambo.data.GetIconPathUseCase
+import klodian.kambo.data.api.WeatherApi
+import klodian.kambo.data.model.TemperatureDto
+import klodian.kambo.data.model.WeatherDto
+import klodian.kambo.data.utils.performSafeRequest
+import klodian.kambo.domain.model.CompleteWeatherInfo
+import klodian.kambo.domain.model.SafeRequestError
+import klodian.kambo.domain.model.Temperature
+import klodian.kambo.domain.model.TemperatureMeasurementUnit
+import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject
 
 class WeatherRepoImpl @Inject constructor(
     private val weatherApi: WeatherApi,
-    private val getIconPath: GetIconPath
+    private val getIconPathUseCase: GetIconPathUseCase
 ) : WeatherRepo {
 
     companion object{
@@ -40,7 +50,7 @@ class WeatherRepoImpl @Inject constructor(
             id = id,
             weather = main,
             description = description,
-            iconName = getIconPath(icon)
+            iconName = getIconPathUseCase(icon)
         )
     }
 

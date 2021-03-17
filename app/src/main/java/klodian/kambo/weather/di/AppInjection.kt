@@ -8,8 +8,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
-import klodian.kambo.data.DataModule
-import klodian.kambo.data.RepositoryModule
+import klodian.kambo.data.di.DataModule
+import klodian.kambo.data.di.RepositoryModule
 import klodian.kambo.weather.WeatherApplication
 import javax.inject.Singleton
 

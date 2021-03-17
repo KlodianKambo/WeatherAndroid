@@ -1,4 +1,4 @@
-package klodian.kambo.data
+package klodian.kambo.data.model
 
 import com.google.gson.annotations.SerializedName
 

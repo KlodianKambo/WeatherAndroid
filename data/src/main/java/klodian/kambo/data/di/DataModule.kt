@@ -1,10 +1,14 @@
-package klodian.kambo.data
+package klodian.kambo.data.di
 
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import klodian.kambo.domain.WeatherRepo
+import klodian.kambo.data.DataConfiguration
+import klodian.kambo.data.DataConfigurationImpl
+import klodian.kambo.data.api.WeatherApi
+import klodian.kambo.data.repositories.WeatherRepoImpl
+import klodian.kambo.domain.repositories.WeatherRepo
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
