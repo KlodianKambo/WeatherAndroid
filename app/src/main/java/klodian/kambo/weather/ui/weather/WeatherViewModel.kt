@@ -1,14 +1,15 @@
-package klodian.kambo.weather
+package klodian.kambo.weather.ui.weather
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import arrow.core.Either
 import klodian.kambo.domain.*
-import klodian.kambo.weather.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.model.UiTemperature
-import klodian.kambo.weather.model.UiTemperatureMeasurementUnit
-import klodian.kambo.weather.model.UiWeather
+import klodian.kambo.weather.R
+import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
+import klodian.kambo.weather.ui.model.UiTemperature
+import klodian.kambo.weather.ui.model.UiTemperatureMeasurementUnit
+import klodian.kambo.weather.ui.model.UiWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -17,7 +18,7 @@ import java.time.format.FormatStyle
 import java.util.*
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class WeatherViewModel @Inject constructor(
     private val weatherRepo: WeatherRepo,
     private val getValidSearchPatternUseCase: GetValidSearchPatternUseCase,
     private val getTemperatureUseCase: GetTemperatureUseCase

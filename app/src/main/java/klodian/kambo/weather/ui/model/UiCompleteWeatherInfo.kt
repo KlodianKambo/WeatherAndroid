@@ -1,4 +1,4 @@
-package klodian.kambo.weather.model
+package klodian.kambo.weather.ui.model
 
 data class UiCompleteWeatherInfo(
     val weather: List<UiWeather>,

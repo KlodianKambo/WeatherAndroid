@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/spring_white"
-    tools:context=".MainActivity">
+    tools:context=".ui.weather.WeatherActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_marginTop="@dimen/size16"

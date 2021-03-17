@@ -6,7 +6,7 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import klodian.kambo.weather.MainViewModel
+import klodian.kambo.weather.ui.weather.WeatherViewModel
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -20,8 +20,8 @@ abstract class ViewModelBinderModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MainViewModel::class)
-    abstract fun bindsViewModel(vm: MainViewModel): ViewModel
+    @ViewModelKey(WeatherViewModel::class)
+    abstract fun bindsViewModel(vm: WeatherViewModel): ViewModel
 
 }
 

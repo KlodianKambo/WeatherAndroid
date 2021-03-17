@@ -1,4 +1,4 @@
-package klodian.kambo.weather
+package klodian.kambo.weather.ui.weather
 
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -7,23 +7,25 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import klodian.kambo.weather.adapter.WeatherRecyclerViewAdapter
-import klodian.kambo.weather.databinding.ActivityMainBinding
+import klodian.kambo.weather.BaseActivity
+import klodian.kambo.weather.R
+import klodian.kambo.weather.databinding.ActivityWeatherBinding
 import klodian.kambo.weather.extensions.hideKeyboard
-import klodian.kambo.weather.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.model.UiTemperature
-import klodian.kambo.weather.model.UiWeather
+import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
+import klodian.kambo.weather.ui.model.UiTemperature
+import klodian.kambo.weather.ui.model.UiWeather
+import klodian.kambo.weather.ui.weather.adapter.WeatherRecyclerViewAdapter
 import java.util.*
 
 
-class MainActivity : BaseActivity() {
-    lateinit var viewModel: MainViewModel
+class WeatherActivity : BaseActivity() {
+    lateinit var viewModel: WeatherViewModel
     private val weatherAdapter = WeatherRecyclerViewAdapter()
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityWeatherBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = getViewModel()
 
@@ -31,24 +33,24 @@ class MainActivity : BaseActivity() {
             weatherRecyclerView.layoutManager = LinearLayoutManager(this.root.context)
             weatherRecyclerView.adapter = weatherAdapter
 
-            viewModel.getWeatherResult().observe(this@MainActivity) { result ->
+            viewModel.getWeatherResult().observe(this@WeatherActivity) { result ->
                 result.fold(
                     ifLeft = { showError(it) },
                     ifRight = { showResult(it) })
             }
 
-            viewModel.isWelcomeEnabled().observe(this@MainActivity) { isWelcomeEnabled ->
+            viewModel.isWelcomeEnabled().observe(this@WeatherActivity) { isWelcomeEnabled ->
                 setWelcomeEnabled(isWelcomeEnabled)
             }
 
-            viewModel.isLoading().observe(this@MainActivity) { isLoading ->
+            viewModel.isLoading().observe(this@WeatherActivity) { isLoading ->
                 if (isLoading) {
                     cityEditText.hideKeyboard()
                 }
                 showLoading(isLoading)
             }
 
-            viewModel.getTemperature().observe(this@MainActivity) {
+            viewModel.getTemperature().observe(this@WeatherActivity) {
                 mainDegreeFab.setImageResource(it.iconResId)
             }
 
@@ -69,18 +71,18 @@ class MainActivity : BaseActivity() {
     }
 
     // Private fun
-    private fun showError(error: MainViewModel.SearchError) {
+    private fun showError(error: WeatherViewModel.SearchError) {
         when (error) {
-            MainViewModel.SearchError.FieldCannotBeNull,
-            MainViewModel.SearchError.Only3ParamsAreAllowed,
-            MainViewModel.SearchError.PleaseInsertTheCity -> {
+            WeatherViewModel.SearchError.FieldCannotBeNull,
+            WeatherViewModel.SearchError.Only3ParamsAreAllowed,
+            WeatherViewModel.SearchError.PleaseInsertTheCity -> {
                 showSearchValidationError(error.errorMessageResId)
             }
-            MainViewModel.SearchError.NoInternet,
-            MainViewModel.SearchError.Generic -> {
+            WeatherViewModel.SearchError.NoInternet,
+            WeatherViewModel.SearchError.Generic -> {
                 showSearchResultError(error.iconResId, getString(error.errorMessageResId))
             }
-            is MainViewModel.SearchError.WeatherNotFound -> {
+            is WeatherViewModel.SearchError.WeatherNotFound -> {
                 val composedStringError = getString(error.errorMessageResId, error.searchValue)
                 showSearchResultError(error.iconResId, composedStringError)
             }
