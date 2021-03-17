@@ -11,11 +11,11 @@
     <string name="search_error_not_found">Previsioni non trovate per la località \"%1$s\". Controllare di aver scritto correttamente il nome della località</string>
     <string name="search_error_generic">Si è verificato un errore, provare più tardi</string>
 
-    <string name="city_name_state_country_hint">Città, stato, nazione</string>
+    <string name="city_name_state_country_hint">Inserisci la località</string>
 
     <string name="feels_like">Percepita</string>
     <string name="Pressure">Pressione</string>
     <string name="humidity">Umidità</string>
-    <string name="welcome_title">Che tempo fa? \nPer iniziare, inserisci il nome della città</string>
-    <string name="welcome_message">Per esempio Huntsville oppure Huntsville, tx, us</string>
+    <string name="welcome_title">Che tempo fa? \nPer iniziare, inserisci il nome della località</string>
+    <string name="welcome_message">Ad esempio \"Huntsville\",\noppure \"Huntsville, tx, us\"</string>
 </resources>

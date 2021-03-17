@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/spring_white"
     tools:context=".MainActivity">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginTop="@dimen/size16"
         android:id="@+id/textInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,6 +21,7 @@
             android:id="@+id/city_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/spring_white"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1" />
@@ -27,7 +30,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_error_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -59,7 +62,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/welcome_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -82,6 +85,7 @@
             android:layout_width="@dimen/size80"
             android:layout_height="@dimen/size80"
             android:src="@drawable/ic_weather_partly_snowy_rainy"
+            app:tint="@color/light_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +108,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_loading_constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -125,7 +129,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/results_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/size0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
@@ -137,7 +141,7 @@
 
             <TextView
                 android:id="@+id/result_city_text_view"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/size0"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/size16"
                 android:ellipsize="end"
@@ -152,7 +156,7 @@
 
             <TextView
                 android:id="@+id/result_date_text_view"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/size0"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size8"
                 android:ellipsize="end"
@@ -169,11 +173,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/size16"
+                android:backgroundTint="@color/yellow"
+                android:tintMode="src_in"
                 android:src="@drawable/ic_temperature_fahrenheit"
                 app:fabCustomSize="@dimen/size40"
                 app:layout_constraintBottom_toBottomOf="@+id/result_date_text_view"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/result_city_text_view" />
+                app:layout_constraintTop_toTopOf="@+id/result_city_text_view"
+                app:tint="@color/white" />
 
 
             <LinearLayout
@@ -185,7 +192,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/result_date_text_view">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -211,7 +218,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -235,7 +242,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -270,7 +277,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/temperature_linear_layout">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -297,7 +304,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
@@ -324,7 +331,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/size0"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
