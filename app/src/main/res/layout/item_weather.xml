@@ -2,16 +2,40 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/item_weather_icon_image_view"
         android:layout_width="@dimen/size48"
         android:layout_height="@dimen/size48"
-        android:layout_margin="@dimen/size16"
+        android:layout_marginStart="@dimen/size16"
+        android:layout_marginTop="@dimen/size8"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/item_weather_description" />
+
+    <TextView
+        android:id="@+id/weather_hour_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size8"
+        app:layout_constraintEnd_toEndOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintStart_toStartOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintTop_toBottomOf="@+id/temperature_text_view"
+        tools:text="08:00" />
+
+    <TextView
+        android:id="@+id/temperature_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size8"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font18"
+        app:layout_constraintEnd_toEndOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintStart_toStartOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintTop_toBottomOf="@+id/item_weather_icon_image_view"
+        tools:text="18°C" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_weather_title"
@@ -24,6 +48,7 @@
         android:maxLines="1"
         android:textColor="@color/black"
         android:textSize="@dimen/font18"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_weather_icon_image_view"
         app:layout_constraintTop_toTopOf="@+id/item_weather_icon_image_view"
@@ -33,187 +58,165 @@
         android:id="@+id/item_weather_description"
         android:layout_width="@dimen/size0"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/size4"
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"
-        app:layout_constraintEnd_toEndOf="@+id/item_weather_title"
-        app:layout_constraintStart_toStartOf="@+id/item_weather_title"
-        app:layout_constraintTop_toBottomOf="@+id/item_weather_title"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Description" />
 
     <LinearLayout
         android:id="@+id/temperature_linear_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/size16"
-        android:layout_marginTop="@dimen/size16"
-        app:layout_constraintTop_toBottomOf="@+id/item_weather_description">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintEnd_toEndOf="@+id/pressure_humidity_felt_linear_layout"
+        app:layout_constraintStart_toStartOf="@+id/pressure_humidity_felt_linear_layout"
+        app:layout_constraintTop_toTopOf="@+id/item_weather_icon_image_view">
 
         <LinearLayout
-            android:layout_width="@dimen/size0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/temperature_text_view"
+                android:id="@+id/temperature_max_image_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="@dimen/font18"
-                tools:text="18°C" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="@dimen/size24"
-                android:layout_height="@dimen/size24"
-                android:layout_marginTop="@dimen/size8"
-                android:src="@drawable/ic_thermometer"
-                app:tint="@android:color/darker_gray" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="@dimen/size0"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/max"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="@dimen/font12" />
 
             <TextView
                 android:id="@+id/temperature_max_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="@dimen/font18"
-                tools:text="18° C" />
+                android:textSize="@dimen/font12"
+                tools:text="18°C" />
 
-            <ImageView
-                android:id="@+id/temperature_max_image_view"
-                android:layout_width="@dimen/size24"
-                android:layout_height="@dimen/size24"
-                android:layout_marginTop="@dimen/size8"
-                android:src="@drawable/ic_thermometer_chevron_up"
-                app:tint="@android:color/holo_red_light" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="@dimen/size0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/temperature_min_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/min"
+                android:textColor="@android:color/holo_blue_bright"
+                android:textSize="@dimen/font12" />
 
             <TextView
                 android:id="@+id/temperature_min_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="@dimen/font18"
-                tools:text="18° C" />
-
-            <ImageView
-                android:id="@+id/temperature_min_image_view"
-                android:layout_width="@dimen/size24"
-                android:layout_height="@dimen/size24"
-                android:layout_marginTop="@dimen/size8"
-                android:src="@drawable/ic_thermometer_chevron_down"
-                app:tint="@android:color/holo_blue_bright" />
-
+                android:textSize="@dimen/font12"
+                tools:text="18°C" />
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/pressure_humidity_felt_linear_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/size16"
-        android:layout_marginTop="@dimen/size24"
-        android:layout_marginEnd="@dimen/size16"
-        app:layout_constraintTop_toBottomOf="@+id/temperature_linear_layout">
+        android:layout_marginEnd="@dimen/size8"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/item_weather_icon_image_view"
+        app:layout_constraintTop_toTopOf="@+id/temperature_text_view">
 
         <LinearLayout
-            android:layout_width="@dimen/size0"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/temperature_felt_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size8"
                 android:gravity="center"
-                android:textSize="@dimen/font18"
+                android:textSize="@dimen/font12"
                 tools:text="18° C" />
 
             <TextView
                 android:id="@+id/temperature_felt_placeholder_text_view"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size8"
+                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:src="@drawable/ic_thermometer_chevron_down"
                 android:text="@string/feels_like"
-                android:textColor="@android:color/black" />
+                android:textSize="@dimen/font12" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="@dimen/size0"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginTop="@dimen/size4"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/humidity_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size8"
                 android:gravity="center"
-                android:textSize="@dimen/font18"
+                android:textSize="@dimen/font12"
                 tools:text="18° C" />
 
             <TextView
                 android:id="@+id/humidity_image_view"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size8"
+                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:src="@drawable/ic_water_percent"
                 android:text="@string/humidity"
-                android:textColor="@android:color/black" />
+                android:textSize="@dimen/font12" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="@dimen/size0"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginTop="@dimen/size4"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/pressure_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size8"
                 android:gravity="center"
-                android:textSize="@dimen/font18"
+                android:textSize="@dimen/font12"
                 tools:text="18° C" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size8"
+                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:src="@drawable/ic_water_percent"
                 android:text="@string/Pressure"
-                android:textColor="@android:color/black" />
-
+                android:textSize="@dimen/font12" />
         </LinearLayout>
     </LinearLayout>
 

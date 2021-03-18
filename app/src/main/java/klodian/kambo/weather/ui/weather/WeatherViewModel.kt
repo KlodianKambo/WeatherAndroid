@@ -13,6 +13,7 @@ import klodian.kambo.weather.ui.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -43,6 +44,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+    private val dateFormatterForTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     private val weatherLiveData: MutableLiveData<Either<SearchError, UiCompleteWeatherInfo>> =
         MutableLiveData()
 
@@ -95,7 +97,13 @@ class WeatherViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     val measurementUnit =
                         measurementUnitLiveData.value ?: TemperatureMeasurementUnit.Celsius
-                    weatherRepo.getWeather(correctedPattern, locale, measurementUnit).fold(
+
+                    weatherRepo.getWeather(
+                        cityName = correctedPattern,
+                        locale = locale,
+                        measurementUnit = measurementUnit,
+                        zoneId = ZoneId.systemDefault()
+                    ).fold(
                         ifLeft = { safeRequestError ->
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
@@ -165,7 +173,7 @@ class WeatherViewModel @Inject constructor(
 
     private fun CompleteWeatherInfo.toUiWeatherTemperature(temperatureUnit: TemperatureMeasurementUnit): UiWeatherTemperature {
         return UiWeatherTemperature(
-            displayableHour = dateFormatter.format(date),
+            displayableHour = dateFormatterForTime.format(date),
             id = UUID.randomUUID().toString(),
             weather = weather.first().toUiWeather(),
             temperature = temperature.toUiTemperature(temperatureUnit)

@@ -48,9 +48,7 @@ class DateWeatherViewHolder(
 
         binding.weatherTemperatureRecyclerView.setRecycledViewPool(viewPool)
         binding.weatherTemperatureRecyclerView.adapter =
-            WeatherRecyclerViewAdapter(viewPool).apply {
-                submitList(uiDateWeather.uiWeatherTemperatureList)
-            }
+            WeatherRecyclerViewAdapter().apply { submitList(uiDateWeather.uiWeatherTemperatureList) }
     }
 
 }
