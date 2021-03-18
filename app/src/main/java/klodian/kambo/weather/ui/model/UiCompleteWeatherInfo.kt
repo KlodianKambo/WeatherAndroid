@@ -1,8 +1,8 @@
 package klodian.kambo.weather.ui.model
 
 data class UiCompleteWeatherInfo(
-    val weather: List<UiWeather>,
-    val temperature: UiTemperature,
+    val uiDateWeather: List<UiDateWeather>,
     val cityNameResult: String,
     val displayableTimeStamp: String
 )
+

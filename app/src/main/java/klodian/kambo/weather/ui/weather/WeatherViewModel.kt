@@ -4,22 +4,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import arrow.core.Either
-import klodian.kambo.domain.model.CompleteWeatherInfo
-import klodian.kambo.domain.model.SafeRequestError
-import klodian.kambo.domain.model.Temperature
-import klodian.kambo.domain.model.TemperatureMeasurementUnit
-import klodian.kambo.domain.model.Weather
+import klodian.kambo.domain.model.*
 import klodian.kambo.domain.repositories.WeatherRepo
 import klodian.kambo.domain.usecases.GetTemperatureUseCase
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import klodian.kambo.weather.R
-import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.ui.model.UiTemperature
-import klodian.kambo.weather.ui.model.UiTemperatureMeasurementUnit
-import klodian.kambo.weather.ui.model.UiWeather
+import klodian.kambo.weather.ui.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -50,6 +44,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+    private val dateFormatterForTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     private val weatherLiveData: MutableLiveData<Either<SearchError, UiCompleteWeatherInfo>> =
         MutableLiveData()
 
@@ -77,11 +72,7 @@ class WeatherViewModel @Inject constructor(
         weatherLiveData.value?.let {
             it.orNull()?.let { uiCompleteWeatherInfo ->
                 weatherLiveData.postValue(
-                    Either.right(
-                        uiCompleteWeatherInfo.copy(
-                            temperature = uiCompleteWeatherInfo.temperature.convertTo(newTempUnit)
-                        )
-                    )
+                    Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
                 )
             }
         }
@@ -106,7 +97,13 @@ class WeatherViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     val measurementUnit =
                         measurementUnitLiveData.value ?: TemperatureMeasurementUnit.Celsius
-                    weatherRepo.getWeather(correctedPattern, locale, measurementUnit).fold(
+
+                    weatherRepo.getWeather(
+                        cityName = correctedPattern,
+                        locale = locale,
+                        measurementUnit = measurementUnit,
+                        zoneId = ZoneId.systemDefault()
+                    ).fold(
                         ifLeft = { safeRequestError ->
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
@@ -115,17 +112,12 @@ class WeatherViewModel @Inject constructor(
                                 )
                             )
                         },
-                        ifRight = { completeWeatherInfo ->
+                        ifRight = { forecastWeather ->
                             val temperatureUnit =
                                 measurementUnitLiveData.value ?: TemperatureMeasurementUnit.Celsius
                             loadingLiveData.postValue(false)
                             weatherLiveData.postValue(
-                                Either.right(
-                                    completeWeatherInfo.toUiCompleteWeatherInfo(
-                                        correctedPattern,
-                                        temperatureUnit
-                                    )
-                                )
+                                Either.right(forecastWeather.toUiCompleteWeatherInfo(temperatureUnit))
                             )
                         })
                 }
@@ -136,7 +128,7 @@ class WeatherViewModel @Inject constructor(
     }
 
 
-    // Private fun
+    // Private fun *********************************************************************************
     private fun Weather.toUiWeather(): UiWeather {
         return UiWeather(
             id = id,
@@ -179,17 +171,15 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun CompleteWeatherInfo.toUiCompleteWeatherInfo(
-        cityName: String,
-        temperatureUnit: TemperatureMeasurementUnit
-    ): UiCompleteWeatherInfo {
-        return UiCompleteWeatherInfo(
-            weather = weather.map { weather -> weather.toUiWeather() },
-            temperature = temperature.toUiTemperature(temperatureUnit),
-            cityNameResult = cityName,
-            displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
+    private fun CompleteWeatherInfo.toUiWeatherTemperature(temperatureUnit: TemperatureMeasurementUnit): UiWeatherTemperature {
+        return UiWeatherTemperature(
+            displayableHour = dateFormatterForTime.format(date),
+            id = UUID.randomUUID().toString(),
+            weather = weather.first().toUiWeather(),
+            temperature = temperature.toUiTemperature(temperatureUnit)
         )
     }
+
 
     private fun GetValidSearchPatternUseCase.PatternValidationError.toSearchError(): SearchError =
         when (this) {
@@ -208,5 +198,41 @@ class WeatherViewModel @Inject constructor(
 
     private fun Double.formatToOneDecimalTemperature(temperatureUnit: TemperatureMeasurementUnit): String {
         return String.format("%.1f°${temperatureUnit.symbol}", this)
+    }
+
+    private fun getUpdateTemperature(
+        uiCompleteWeatherInfo: UiCompleteWeatherInfo,
+        temperatureUnit: TemperatureMeasurementUnit
+    ): UiCompleteWeatherInfo {
+        return uiCompleteWeatherInfo.copy(
+            uiDateWeather = uiCompleteWeatherInfo.uiDateWeather.map { uiWeatherTemperature ->
+                uiWeatherTemperature.copy(
+                    uiWeatherTemperatureList = uiWeatherTemperature.uiWeatherTemperatureList.map {
+                        it.copy(temperature = it.temperature.convertTo(temperatureUnit))
+                    }
+                )
+            }
+        )
+    }
+
+    private fun ForecastWeather.toUiCompleteWeatherInfo(
+        temperatureUnit: TemperatureMeasurementUnit
+    ): UiCompleteWeatherInfo {
+        val dateWeatherList = completeWeatherInfoList
+            .groupBy { it.date.dayOfYear }
+            .entries.map {
+                UiDateWeather(
+                    displayableDay = dateFormatter.format(it.value.first().date),
+                    uiWeatherTemperatureList = it.value.map { completeWeatherInfo ->
+                        completeWeatherInfo.toUiWeatherTemperature(temperatureUnit)
+                    }
+                )
+            }
+
+        return UiCompleteWeatherInfo(
+            uiDateWeather = dateWeatherList,
+            cityNameResult = "${city}, $country",
+            displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
+        )
     }
 }

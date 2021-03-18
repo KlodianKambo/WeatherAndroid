@@ -19,5 +19,7 @@
 
     <string name="welcome_title">What\'s the weather like? \nTo start type the name of the location</string>
     <string name="welcome_message">For example \"Huntsville\"\nor \"Huntsville, tx, us\"</string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
 
 </resources>

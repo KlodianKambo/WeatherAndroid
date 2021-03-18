@@ -11,16 +11,15 @@ import klodian.kambo.weather.BaseActivity
 import klodian.kambo.weather.R
 import klodian.kambo.weather.databinding.ActivityWeatherBinding
 import klodian.kambo.weather.extensions.hideKeyboard
+import klodian.kambo.weather.ui.model.UiDateWeather
 import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.ui.model.UiTemperature
-import klodian.kambo.weather.ui.model.UiWeather
-import klodian.kambo.weather.ui.weather.adapter.WeatherRecyclerViewAdapter
+import klodian.kambo.weather.ui.weather.adapter.DateWeatherRecyclerViewAdapter
 import java.util.*
 
 
 class WeatherActivity : BaseActivity() {
     lateinit var viewModel: WeatherViewModel
-    private val weatherAdapter = WeatherRecyclerViewAdapter()
+    private val weatherAdapter = DateWeatherRecyclerViewAdapter()
     private lateinit var binding: ActivityWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +35,7 @@ class WeatherActivity : BaseActivity() {
             viewModel.getWeatherResult().observe(this@WeatherActivity) { result ->
                 result.fold(
                     ifLeft = { showError(it) },
-                    ifRight = { showResult(it) })
+                    ifRight = { uiCompleteWeatherInfo -> showResult(uiCompleteWeatherInfo) })
             }
 
             viewModel.isWelcomeEnabled().observe(this@WeatherActivity) { isWelcomeEnabled ->
@@ -109,19 +108,17 @@ class WeatherActivity : BaseActivity() {
         binding.textInputLayout.error = getString(error)
     }
 
-    private fun showResult(completeWeatherInfo: UiCompleteWeatherInfo) {
-        with(binding) {
-            showWeather(completeWeatherInfo.weather)
-            showTemperature(completeWeatherInfo.temperature)
-            resultCityTextView.text = completeWeatherInfo.cityNameResult
-            resultDateTextView.text = completeWeatherInfo.displayableTimeStamp
-        }
+    private fun showResult(uiCompleteWeatherInfo: UiCompleteWeatherInfo) {
+        binding.resultCityTextView.text = uiCompleteWeatherInfo.cityNameResult
+        binding.resultDateTextView.text = uiCompleteWeatherInfo.displayableTimeStamp
+        showWeather(uiCompleteWeatherInfo.uiDateWeather)
     }
 
-    private fun showWeather(weatherList: List<UiWeather>) {
+    private fun showWeather(weatherListUi: List<UiDateWeather>) {
         with(binding) {
+            weatherRecyclerView.scrollToPosition(0)
             resultsContainer.isVisible = true
-            weatherAdapter.submitList(weatherList)
+            weatherAdapter.data = weatherListUi
             weatherRecyclerView.isVisible = true
         }
     }
@@ -129,7 +126,7 @@ class WeatherActivity : BaseActivity() {
     private fun hideResults() {
         with(binding) {
             resultsContainer.isVisible = false
-            weatherAdapter.submitList(emptyList())
+            weatherAdapter.data = emptyList()
             weatherRecyclerView.isVisible = false
         }
     }
@@ -142,14 +139,5 @@ class WeatherActivity : BaseActivity() {
         binding.welcomeConstraintLayout.isVisible = isEnabled
     }
 
-    private fun showTemperature(uiTemperature: UiTemperature) {
-        with(binding) {
-            temperatureTextView.text = uiTemperature.displayableTemperature
-            temperatureMaxTextView.text = uiTemperature.displayableMaxTemperature
-            temperatureMinTextView.text = uiTemperature.displayableMinTemperature
-            temperatureFeltTextView.text = uiTemperature.displayableFeelsLike
-            humidityTextView.text = uiTemperature.humidity
-            pressureTextView.text = uiTemperature.pressure
-        }
-    }
+
 }

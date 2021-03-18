@@ -18,4 +18,6 @@
     <string name="humidity">Umidità</string>
     <string name="welcome_title">Che tempo fa? \nPer iniziare, inserisci il nome della località</string>
     <string name="welcome_message">Ad esempio \"Huntsville\",\noppure \"Huntsville, tx, us\"</string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
 </resources>
