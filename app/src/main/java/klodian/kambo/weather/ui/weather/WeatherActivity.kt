@@ -116,6 +116,7 @@ class WeatherActivity : BaseActivity() {
 
     private fun showWeather(weatherListUi: List<UiDateWeather>) {
         with(binding) {
+            weatherRecyclerView.scrollToPosition(0)
             resultsContainer.isVisible = true
             weatherAdapter.data = weatherListUi
             weatherRecyclerView.isVisible = true
