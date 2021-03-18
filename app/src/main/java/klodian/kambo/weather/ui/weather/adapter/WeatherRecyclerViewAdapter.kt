@@ -11,7 +11,7 @@ import klodian.kambo.weather.databinding.ItemWeatherBinding
 import klodian.kambo.weather.ui.model.UiTemperature
 import klodian.kambo.weather.ui.model.UiWeatherTemperature
 
-class WeatherRecyclerViewAdapter :
+class WeatherRecyclerViewAdapter(private val viewPool: RecyclerView.RecycledViewPool) :
     ListAdapter<UiWeatherTemperature, WeatherViewHolder>(WeatherDiffUtils) {
 
     object WeatherDiffUtils : DiffUtil.ItemCallback<UiWeatherTemperature>() {

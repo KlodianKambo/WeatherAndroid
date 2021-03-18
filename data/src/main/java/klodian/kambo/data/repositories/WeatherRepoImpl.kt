@@ -3,12 +3,16 @@ package klodian.kambo.data.repositories
 import arrow.core.Either
 import klodian.kambo.data.GetIconPathUseCase
 import klodian.kambo.data.api.WeatherApi
+import klodian.kambo.data.model.ForecastResponseDto
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
 import klodian.kambo.data.utils.performSafeRequest
 import klodian.kambo.domain.model.*
 import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.coroutineScope
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
@@ -26,7 +30,7 @@ class WeatherRepoImpl @Inject constructor(
         cityName: String,
         locale: Locale,
         measurementUnit: TemperatureMeasurementUnit
-    ): Either<SafeRequestError, List<CompleteWeatherInfo>> = coroutineScope {
+    ): Either<SafeRequestError, ForecastWeather> = coroutineScope {
 
         val unit = when (measurementUnit) {
             TemperatureMeasurementUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
@@ -38,11 +42,7 @@ class WeatherRepoImpl @Inject constructor(
                 cityNamePattern = cityName,
                 language = locale.language,
                 units = unit
-            ).list.map { weatherResponse ->
-                CompleteWeatherInfo(
-                    temperature = weatherResponse.main.toTemperature(measurementUnit),
-                    weather = weatherResponse.weather.map { it.toWeather() })
-            }
+            ).toForecastWeather(measurementUnit)
         }
     }
 
@@ -53,6 +53,21 @@ class WeatherRepoImpl @Inject constructor(
             description = description,
             iconName = getIconPathUseCase(icon)
         )
+    }
+
+    private fun ForecastResponseDto.toForecastWeather(measurementUnit: TemperatureMeasurementUnit): ForecastWeather {
+        return ForecastWeather(
+            city = city.name,
+            country = city.country,
+            completeWeatherInfoList = list.map { weatherResponse ->
+                CompleteWeatherInfo(
+                    date = LocalDateTime.ofInstant(
+                        Instant.ofEpochSecond(weatherResponse.dateLongMillis),
+                        ZoneId.systemDefault()
+                    ),
+                    temperature = weatherResponse.main.toTemperature(measurementUnit),
+                    weather = weatherResponse.weather.map { it.toWeather() })
+            })
     }
 
     private fun TemperatureDto.toTemperature(measurementUnit: TemperatureMeasurementUnit): Temperature {

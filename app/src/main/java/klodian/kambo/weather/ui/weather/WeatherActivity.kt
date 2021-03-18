@@ -11,15 +11,15 @@ import klodian.kambo.weather.BaseActivity
 import klodian.kambo.weather.R
 import klodian.kambo.weather.databinding.ActivityWeatherBinding
 import klodian.kambo.weather.extensions.hideKeyboard
+import klodian.kambo.weather.ui.model.UiDateWeather
 import klodian.kambo.weather.ui.model.UiCompleteWeatherInfo
-import klodian.kambo.weather.ui.model.UiWeatherTemperature
-import klodian.kambo.weather.ui.weather.adapter.WeatherRecyclerViewAdapter
+import klodian.kambo.weather.ui.weather.adapter.DateWeatherRecyclerViewAdapter
 import java.util.*
 
 
 class WeatherActivity : BaseActivity() {
     lateinit var viewModel: WeatherViewModel
-    private val weatherAdapter = WeatherRecyclerViewAdapter()
+    private val weatherAdapter = DateWeatherRecyclerViewAdapter()
     private lateinit var binding: ActivityWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,13 +111,13 @@ class WeatherActivity : BaseActivity() {
     private fun showResult(uiCompleteWeatherInfo: UiCompleteWeatherInfo) {
         binding.resultCityTextView.text = uiCompleteWeatherInfo.cityNameResult
         binding.resultDateTextView.text = uiCompleteWeatherInfo.displayableTimeStamp
-        showWeather(uiCompleteWeatherInfo.uiWeatherTemperatureList)
+        showWeather(uiCompleteWeatherInfo.uiDateWeather)
     }
 
-    private fun showWeather(weatherList: List<UiWeatherTemperature>) {
+    private fun showWeather(weatherListUi: List<UiDateWeather>) {
         with(binding) {
             resultsContainer.isVisible = true
-            weatherAdapter.submitList(weatherList)
+            weatherAdapter.data = weatherListUi
             weatherRecyclerView.isVisible = true
         }
     }
@@ -125,7 +125,7 @@ class WeatherActivity : BaseActivity() {
     private fun hideResults() {
         with(binding) {
             resultsContainer.isVisible = false
-            weatherAdapter.submitList(emptyList())
+            weatherAdapter.data = emptyList()
             weatherRecyclerView.isVisible = false
         }
     }
