@@ -69,9 +69,9 @@ class WeatherViewModel @Inject constructor(
 
         weatherLiveData.value?.let {
             it.orNull()?.let { uiCompleteWeatherInfo ->
-//                weatherLiveData.postValue(
-////                    Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
-//                )
+                weatherLiveData.postValue(
+                    Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
+                )
             }
         }
     }
@@ -192,19 +192,20 @@ class WeatherViewModel @Inject constructor(
         return String.format("%.1f°${temperatureUnit.symbol}", this)
     }
 
-//    private fun getUpdateTemperature(
-//        uiCompleteWeatherInfo: UiCompleteWeatherInfo,
-//        temperatureUnit: TemperatureMeasurementUnit
-//    ): UiCompleteWeatherInfo {
-//        return uiCompleteWeatherInfo.copy(
-//            uiWeatherTemperatureList = uiCompleteWeatherInfo.uiWeatherTemperatureList.map { uiWeatherTemperature ->
-//                uiWeatherTemperature.copy(
-//                    temperature = uiWeatherTemperature
-//                        .temperature.convertTo(temperatureUnit)
-//                )
-//            }
-//        )
-//    }
+    private fun getUpdateTemperature(
+        uiCompleteWeatherInfo: UiCompleteWeatherInfo,
+        temperatureUnit: TemperatureMeasurementUnit
+    ): UiCompleteWeatherInfo {
+        return uiCompleteWeatherInfo.copy(
+            uiDateWeather = uiCompleteWeatherInfo.uiDateWeather.map { uiWeatherTemperature ->
+                uiWeatherTemperature.copy(
+                    uiWeatherTemperatureList = uiWeatherTemperature.uiWeatherTemperatureList.map {
+                        it.copy(temperature = it.temperature.convertTo(temperatureUnit))
+                    }
+                )
+            }
+        )
+    }
 
     private fun ForecastWeather.toUiCompleteWeatherInfo(
         temperatureUnit: TemperatureMeasurementUnit
