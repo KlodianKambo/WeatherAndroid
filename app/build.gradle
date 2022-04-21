@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "klodian.kambo.weather"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 31
+        versionCode 1001000
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,25 +41,13 @@ android {
 
 dependencies {
 
-    implementation project(path: ':domain')
-    implementation project(path: ':data')
-
-    implementation libs.main.kotlin
-    implementation libs.main.arrow
-
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
-    // UI
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation "com.google.android.material:material:1.4.0-alpha01"
-    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+    implementation project(path: ':domain')
+    implementation project(path: ':data')
+    implementation project(path: ':ui')
 
-    // TEST
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation libs.main.kotlin
 
     // Dagger dependency injection
     implementation libs.main.dagger
@@ -69,17 +57,4 @@ dependencies {
 
     // LOG
     implementation libs.main.timber
-
-    // ANDROID
-    implementation libs.main.appcompat
-    implementation libs.main.androidKtx
-    implementation libs.main.fragmentKtx
-    implementation libs.main.lifecycleExtensions
-    implementation libs.main.viewmodelKtx
-
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
-
-    implementation 'com.squareup.picasso:picasso:2.71828'
 }

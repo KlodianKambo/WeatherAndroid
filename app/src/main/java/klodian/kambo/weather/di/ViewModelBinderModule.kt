@@ -6,7 +6,7 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import klodian.kambo.weather.ui.weather.WeatherViewModel
+import com.kambo.klodian.ui.ui.weather.WeatherViewModel
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
