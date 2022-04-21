@@ -2,8 +2,8 @@ package klodian.kambo.weather.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import klodian.kambo.weather.BaseActivity
-import klodian.kambo.weather.ui.weather.WeatherActivity
+import com.kambo.klodian.ui.ui.BaseActivity
+import com.kambo.klodian.ui.ui.weather.WeatherActivity
 
 @Module(includes = [ViewModelBinderModule::class])
 abstract class ActivityModule {

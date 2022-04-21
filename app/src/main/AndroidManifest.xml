@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:name=".WeatherApplication"
         android:theme="@style/Theme.Weather">
-        <activity android:name=".ui.weather.WeatherActivity">
+        <activity android:name="com.kambo.klodian.ui.ui.weather.WeatherActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
