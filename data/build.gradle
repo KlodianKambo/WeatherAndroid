@@ -39,6 +39,7 @@ android {
 dependencies {
 
     implementation project(path: ':domain')
+    implementation project(":entities")
 
     implementation libs.main.kotlin
     implementation libs.main.arrow

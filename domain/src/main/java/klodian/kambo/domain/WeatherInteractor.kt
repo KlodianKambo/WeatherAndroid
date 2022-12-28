@@ -2,8 +2,8 @@ package klodian.kambo.domain
 
 import arrow.core.Either
 import arrow.core.flatMap
-import klodian.kambo.domain.model.ForecastWeather
-import klodian.kambo.domain.model.TemperatureUnit
+import com.kambo.klodian.entities.model.ForecastWeather
+import com.kambo.klodian.entities.model.TemperatureUnit
 import klodian.kambo.domain.model.WeatherInteractorError
 import klodian.kambo.domain.repositories.WeatherRepo
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase

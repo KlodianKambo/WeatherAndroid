@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import arrow.core.Either
-import com.kambo.klodian.entities.model.TemperatureMeasurementUnit
+import com.kambo.klodian.entities.model.*
 import com.kambo.klodian.ui.R
 import com.kambo.klodian.ui.ui.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +12,6 @@ import klodian.kambo.domain.model.*
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import klodian.kambo.domain.usecases.GetWeatherUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -55,7 +54,7 @@ class WeatherViewModel @Inject constructor(
     private val welcomeEnabled = MutableStateFlow(true)
 
     private val measurementUnitLiveData =
-        MutableStateFlow<TemperatureMeasurementUnit>(TemperatureMeasurementUnit.Celsius)
+        MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
 
     private val loadingLiveData = MutableStateFlow(false)
 
@@ -67,8 +66,8 @@ class WeatherViewModel @Inject constructor(
 
         viewModelScope.launch {
             val newTempUnit = when (measurementUnitLiveData.value) {
-                TemperatureMeasurementUnit.Fahrenheit -> TemperatureMeasurementUnit.Celsius
-                TemperatureMeasurementUnit.Celsius -> TemperatureMeasurementUnit.Fahrenheit
+                TemperatureUnit.Fahrenheit -> TemperatureUnit.Celsius
+                TemperatureUnit.Celsius -> TemperatureUnit.Fahrenheit
             }
 
             measurementUnitLiveData.tryEmit(newTempUnit)
@@ -91,8 +90,8 @@ class WeatherViewModel @Inject constructor(
     fun getTemperature(): Flow<UiTemperatureMeasurementUnit> {
         return measurementUnitLiveData.map {
             when (it) {
-                TemperatureMeasurementUnit.Fahrenheit -> UiTemperatureMeasurementUnit.Celsius
-                TemperatureMeasurementUnit.Celsius -> UiTemperatureMeasurementUnit.Fahrenheit
+                TemperatureUnit.Fahrenheit -> UiTemperatureMeasurementUnit.Celsius
+                TemperatureUnit.Celsius -> UiTemperatureMeasurementUnit.Fahrenheit
             }
         }
     }
@@ -106,9 +105,7 @@ class WeatherViewModel @Inject constructor(
                 welcomeEnabled.tryEmit(false)
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    val measurementUnit =
-                        measurementUnitLiveData.value?.toTemperatureMeasurementUnit()
-                            ?: TemperatureUnit.Celsius
+                    val measurementUnit = measurementUnitLiveData.value.toTemperatureUnit()
 
                     getWeatherUseCase(
                         cityName = correctedPattern,
@@ -126,7 +123,7 @@ class WeatherViewModel @Inject constructor(
                         },
                         ifRight = { forecastWeather ->
                             val temperatureUnit =
-                                measurementUnitLiveData.value ?: TemperatureMeasurementUnit.Celsius
+                                measurementUnitLiveData.value ?: TemperatureUnit.Celsius
                             loadingLiveData.tryEmit(false)
                             weatherLiveData.tryEmit(
                                 Either.right(forecastWeather.toUiCompleteWeatherInfo(temperatureUnit))
@@ -150,7 +147,7 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun Temperature.toUiTemperature(temperatureUnit: TemperatureMeasurementUnit): UiTemperature {
+    private fun Temperature.toUiTemperature(temperatureUnit: TemperatureUnit): UiTemperature {
         return UiTemperature(
             displayableTemperature = temperature.formatToOneDecimalTemperature(temperatureUnit),
             displayableMaxTemperature = maxTemperature.formatToOneDecimalTemperature(temperatureUnit),
@@ -165,7 +162,7 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun UiTemperature.convertTo(temperatureUnit: TemperatureMeasurementUnit): UiTemperature {
+    private fun UiTemperature.convertTo(temperatureUnit: TemperatureUnit): UiTemperature {
         val newTemp = getTemperatureUseCase(temperature, temperatureUnit)
         val newMaxTemp = getTemperatureUseCase(maxTemperature, temperatureUnit)
         val newMinTemp = getTemperatureUseCase(minTemperature, temperatureUnit)
@@ -183,7 +180,7 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun CompleteWeatherInfo.toUiWeatherTemperature(temperatureUnit: TemperatureMeasurementUnit): UiWeatherTemperature {
+    private fun CompleteWeatherInfo.toUiWeatherTemperature(temperatureUnit: TemperatureUnit): UiWeatherTemperature {
         return UiWeatherTemperature(
             displayableHour = dateFormatterForTime.format(date),
             id = UUID.randomUUID().toString(),
@@ -210,13 +207,13 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun Double.formatToOneDecimalTemperature(temperatureUnit: TemperatureMeasurementUnit): String {
+    private fun Double.formatToOneDecimalTemperature(temperatureUnit: TemperatureUnit): String {
         return String.format("%.1f°${temperatureUnit.symbol}", this)
     }
 
     private fun getUpdateTemperature(
         uiCompleteWeatherInfo: UiCompleteWeatherInfo,
-        temperatureUnit: TemperatureMeasurementUnit
+        temperatureUnit: TemperatureUnit
     ): UiCompleteWeatherInfo {
         return uiCompleteWeatherInfo.copy(
             uiDateWeather = uiCompleteWeatherInfo.uiDateWeather.map { uiWeatherTemperature ->
@@ -230,7 +227,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun ForecastWeather.toUiCompleteWeatherInfo(
-        temperatureUnit: TemperatureMeasurementUnit
+        temperatureUnit: TemperatureUnit
     ): UiCompleteWeatherInfo {
         val dateWeatherList = completeWeatherInfoList
             .groupBy { it.date.dayOfYear }
@@ -250,10 +247,10 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun TemperatureMeasurementUnit.toTemperatureMeasurementUnit(): TemperatureUnit {
+    private fun TemperatureUnit.toTemperatureUnit(): TemperatureUnit {
         return when (this) {
-            TemperatureMeasurementUnit.Celsius -> TemperatureUnit.Celsius
-            TemperatureMeasurementUnit.Fahrenheit -> TemperatureUnit.Fahrenheit
+            TemperatureUnit.Celsius -> TemperatureUnit.Celsius
+            TemperatureUnit.Fahrenheit -> TemperatureUnit.Fahrenheit
         }
     }
 }

@@ -4,6 +4,7 @@ import arrow.core.Either
 import klodian.kambo.data.utils.performSafeRequest
 import klodian.kambo.domain.model.HttpRequestError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType
 import okhttp3.ResponseBody
@@ -18,7 +19,7 @@ class SafeRequestTest {
 
     @Test
     fun `when lambda returns successfully then emit the result as success`() {
-        runBlockingTest {
+        runBlocking {
             val expectedResult = true
             val result = performSafeRequest { expectedResult }
             assertEquals(Either.right(expectedResult), result)
@@ -27,7 +28,7 @@ class SafeRequestTest {
 
     @Test
     fun `when lambda throws IOException then emit NetworkError`() {
-        runBlockingTest {
+        runBlocking {
             val result = performSafeRequest { throw IOException() }
             assertEquals(Either.left(HttpRequestError.NetworkError), result)
         }
@@ -40,7 +41,7 @@ class SafeRequestTest {
             "{\"errors\": [\"404 Not found\"]}"
         )
 
-        runBlockingTest {
+        runBlocking {
             val result =
                 performSafeRequest { throw HttpException(Response.error<Any>(404, errorBody)) }
             assertEquals(Either.left(HttpRequestError.NotFound), result)
@@ -53,7 +54,7 @@ class SafeRequestTest {
             MediaType.parse("application/json"),
             "{\"errors\": [\"402 Payment Required\"]}"
         )
-        runBlockingTest {
+        runBlocking {
             val result =
                 performSafeRequest { throw HttpException(Response.error<Any>(402, errorBody)) }
             assertEquals(Either.left(HttpRequestError.Generic), result)
@@ -62,7 +63,7 @@ class SafeRequestTest {
 
     @Test
     fun `when lambda throws unknown exception then it should emit GenericError`() {
-        runBlockingTest {
+        runBlocking {
             val result = performSafeRequest { throw IllegalStateException() }
             assertEquals(Either.left(HttpRequestError.Generic), result)
         }

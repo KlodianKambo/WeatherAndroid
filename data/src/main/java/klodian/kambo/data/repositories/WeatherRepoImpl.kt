@@ -1,13 +1,14 @@
 package klodian.kambo.data.repositories
 
 import arrow.core.Either
+import com.kambo.klodian.entities.model.*
 import klodian.kambo.data.GetIconPathUseCase
 import klodian.kambo.data.api.WeatherApi
 import klodian.kambo.data.model.ForecastResponseDto
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
 import klodian.kambo.data.utils.performSafeRequest
-import klodian.kambo.domain.model.*
+import klodian.kambo.domain.model.HttpRequestError
 import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.coroutineScope
 import java.time.Instant

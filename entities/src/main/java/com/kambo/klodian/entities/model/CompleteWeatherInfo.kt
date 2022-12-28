@@ -1,4 +1,4 @@
-package klodian.kambo.domain.model
+package com.kambo.klodian.entities.model
 
 import java.time.LocalDateTime
 

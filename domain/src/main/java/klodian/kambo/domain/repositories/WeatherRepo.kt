@@ -1,9 +1,9 @@
 package klodian.kambo.domain.repositories
 
 import arrow.core.Either
-import klodian.kambo.domain.model.ForecastWeather
+import com.kambo.klodian.entities.model.ForecastWeather
 import klodian.kambo.domain.model.HttpRequestError
-import klodian.kambo.domain.model.TemperatureUnit
+import com.kambo.klodian.entities.model.TemperatureUnit
 import java.time.ZoneId
 import java.util.*
 
