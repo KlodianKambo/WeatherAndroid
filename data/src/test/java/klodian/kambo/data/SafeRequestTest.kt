@@ -2,7 +2,7 @@ package klodian.kambo.data
 
 import arrow.core.Either
 import klodian.kambo.data.utils.performSafeRequest
-import klodian.kambo.domain.model.SafeRequestError
+import klodian.kambo.domain.model.HttpRequestError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType
@@ -29,7 +29,7 @@ class SafeRequestTest {
     fun `when lambda throws IOException then emit NetworkError`() {
         runBlockingTest {
             val result = performSafeRequest { throw IOException() }
-            assertEquals(Either.left(SafeRequestError.NetworkError), result)
+            assertEquals(Either.left(HttpRequestError.NetworkError), result)
         }
     }
 
@@ -43,7 +43,7 @@ class SafeRequestTest {
         runBlockingTest {
             val result =
                 performSafeRequest { throw HttpException(Response.error<Any>(404, errorBody)) }
-            assertEquals(Either.left(SafeRequestError.NotFound), result)
+            assertEquals(Either.left(HttpRequestError.NotFound), result)
         }
     }
 
@@ -56,7 +56,7 @@ class SafeRequestTest {
         runBlockingTest {
             val result =
                 performSafeRequest { throw HttpException(Response.error<Any>(402, errorBody)) }
-            assertEquals(Either.left(SafeRequestError.Generic), result)
+            assertEquals(Either.left(HttpRequestError.Generic), result)
         }
     }
 
@@ -64,7 +64,7 @@ class SafeRequestTest {
     fun `when lambda throws unknown exception then it should emit GenericError`() {
         runBlockingTest {
             val result = performSafeRequest { throw IllegalStateException() }
-            assertEquals(Either.left(SafeRequestError.Generic), result)
+            assertEquals(Either.left(HttpRequestError.Generic), result)
         }
     }
 }

@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import klodian.kambo.data.DataConfiguration
 import klodian.kambo.data.DataConfigurationImpl
 import klodian.kambo.data.api.WeatherApi
@@ -17,6 +19,7 @@ import retrofit2.create
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 class DataModule {
 
     @Singleton
@@ -65,8 +68,10 @@ class DataModule {
 }
 
 @Module(includes = [DataModule::class])
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
     @Binds
+    @Singleton
     internal abstract fun bindsRepository(imp: WeatherRepoImpl): WeatherRepo
 }

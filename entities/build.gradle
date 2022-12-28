@@ -11,8 +11,6 @@ java {
 
 dependencies {
 
-    implementation project(":entities")
-
     implementation libs.main.kotlin
 
     implementation libs.main.arrow

@@ -1,15 +1,12 @@
 package klodian.kambo.domain.usecases
 
 import arrow.core.Either
+import klodian.kambo.domain.WeatherInteractor
+import klodian.kambo.domain.model.HttpRequestError
+import klodian.kambo.domain.model.PatternValidationError
 import javax.inject.Inject
 
 class GetValidSearchPatternUseCase @Inject constructor() {
-
-    sealed class PatternValidationError {
-        object NullOrEmptyPattern : PatternValidationError()
-        object TooManyCommaParams : PatternValidationError()
-        object NoParamsFound : PatternValidationError()
-    }
 
     operator fun invoke(pattern: String?): Either<PatternValidationError, String> {
         if (pattern.isNullOrEmpty()) {

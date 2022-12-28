@@ -1,7 +1,7 @@
 package klodian.kambo.domain
 
-import klodian.kambo.domain.model.TemperatureMeasurementUnit
-import klodian.kambo.domain.usecases.GetTemperatureUseCase
+import com.kambo.klodian.entities.businessrules.GetTemperatureUseCase
+import com.kambo.klodian.entities.model.TemperatureMeasurementUnit
 import org.junit.Test
 import kotlin.test.assertEquals
 

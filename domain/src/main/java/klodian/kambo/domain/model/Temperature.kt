@@ -1,5 +1,6 @@
 package klodian.kambo.domain.model
 
+
 data class Temperature(
     val temperature: Double,
     val feelsLike: Double,
@@ -7,5 +8,5 @@ data class Temperature(
     val maxTemperature: Double,
     val pressure: Double,
     val humidity: Double,
-    val temperatureMeasurementUnit: TemperatureMeasurementUnit
+    val temperatureMeasurementUnit: TemperatureUnit
 )

@@ -3,23 +3,28 @@ package com.kambo.klodian.ui.ui.weather
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kambo.klodian.ui.R
 import com.kambo.klodian.ui.databinding.ActivityWeatherBinding
-import com.kambo.klodian.ui.ui.BaseActivity
 import com.kambo.klodian.ui.ui.extensions.hideKeyboard
-import com.kambo.klodian.ui.ui.model.UiDateWeather
 import com.kambo.klodian.ui.ui.model.UiCompleteWeatherInfo
+import com.kambo.klodian.ui.ui.model.UiDateWeather
 import com.kambo.klodian.ui.ui.weather.adapter.DateWeatherRecyclerViewAdapter
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.*
 
 
-class WeatherActivity : BaseActivity() {
+@AndroidEntryPoint
+class WeatherActivity : AppCompatActivity() {
 
-    lateinit var viewModel: WeatherViewModel
+    private val viewModel: WeatherViewModel by viewModels()
     private val weatherAdapter = DateWeatherRecyclerViewAdapter()
     private lateinit var binding: ActivityWeatherBinding
 
@@ -27,31 +32,40 @@ class WeatherActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = getViewModel()
 
         with(binding) {
             weatherRecyclerView.layoutManager = LinearLayoutManager(this.root.context)
             weatherRecyclerView.adapter = weatherAdapter
 
-            viewModel.getWeatherResult().observe(this@WeatherActivity) { result ->
-                result.fold(
-                    ifLeft = { showError(it) },
-                    ifRight = { uiCompleteWeatherInfo -> showResult(uiCompleteWeatherInfo) })
-            }
-
-            viewModel.isWelcomeEnabled().observe(this@WeatherActivity) { isWelcomeEnabled ->
-                setWelcomeEnabled(isWelcomeEnabled)
-            }
-
-            viewModel.isLoading().observe(this@WeatherActivity) { isLoading ->
-                if (isLoading) {
-                    cityEditText.hideKeyboard()
+            lifecycleScope.launch {
+                viewModel.getWeatherResult().collect { result ->
+                    result.fold(
+                        ifLeft = { showError(it) },
+                        ifRight = { uiCompleteWeatherInfo ->
+                            uiCompleteWeatherInfo?.let { showResult(it) }
+                        })
                 }
-                showLoading(isLoading)
             }
 
-            viewModel.getTemperature().observe(this@WeatherActivity) {
-                mainDegreeFab.setImageResource(it.iconResId)
+            lifecycleScope.launch {
+                viewModel.isWelcomeEnabled().collect { isWelcomeEnabled ->
+                    setWelcomeEnabled(isWelcomeEnabled)
+                }
+            }
+
+            lifecycleScope.launch {
+                viewModel.isLoading().collect { isLoading ->
+                    if (isLoading) {
+                        cityEditText.hideKeyboard()
+                    }
+                    showLoading(isLoading)
+                }
+            }
+
+            lifecycleScope.launch {
+                viewModel.getTemperature().collect {
+                    mainDegreeFab.setImageResource(it.iconResId)
+                }
             }
 
             mainDegreeFab.setOnClickListener {

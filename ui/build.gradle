@@ -1,16 +1,16 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -48,6 +48,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "com.google.android.material:material:1.4.0-alpha01"
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+    implementation project(path: ':entities')
 
     // TEST
     testImplementation 'junit:junit:4.13.2'
@@ -56,11 +57,8 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Dagger dependency injection
-    implementation libs.main.dagger
-    implementation "com.google.dagger:dagger-android-support:$versions.dagger"
-    kapt libs.main.daggerCompiler
-    kapt "com.google.dagger:dagger-android-processor:$versions.dagger"
+    implementation libs.main.hilt
+    kapt libs.main.hiltKapt
 
     // LOG
     implementation libs.main.timber
@@ -70,11 +68,8 @@ dependencies {
     implementation libs.main.androidKtx
     implementation libs.main.fragmentKtx
     implementation libs.main.lifecycleExtensions
-    implementation libs.main.viewmodelKtx
-
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
+    implementation libs.main.viewModelKtx
+    implementation libs.main.runtimeKtx
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 

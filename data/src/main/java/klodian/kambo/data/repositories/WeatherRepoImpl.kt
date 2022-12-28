@@ -29,13 +29,13 @@ class WeatherRepoImpl @Inject constructor(
     override suspend fun getWeather(
         cityName: String,
         locale: Locale,
-        measurementUnit: TemperatureMeasurementUnit,
+        measurementUnit: TemperatureUnit,
         zoneId: ZoneId
-    ): Either<SafeRequestError, ForecastWeather> = coroutineScope {
+    ): Either<HttpRequestError, ForecastWeather> = coroutineScope {
 
         val unit = when (measurementUnit) {
-            TemperatureMeasurementUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
-            TemperatureMeasurementUnit.Celsius -> TEMPERATURE_UNIT_METRIC
+            TemperatureUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
+            TemperatureUnit.Celsius -> TEMPERATURE_UNIT_METRIC
         }
 
         performSafeRequest {
@@ -57,7 +57,7 @@ class WeatherRepoImpl @Inject constructor(
     }
 
     private fun ForecastResponseDto.toForecastWeather(
-        measurementUnit: TemperatureMeasurementUnit,
+        measurementUnit: TemperatureUnit,
         zoneId: ZoneId
     ): ForecastWeather {
         return ForecastWeather(
@@ -74,7 +74,7 @@ class WeatherRepoImpl @Inject constructor(
             })
     }
 
-    private fun TemperatureDto.toTemperature(measurementUnit: TemperatureMeasurementUnit): Temperature {
+    private fun TemperatureDto.toTemperature(measurementUnit: TemperatureUnit): Temperature {
         return Temperature(temp, feelsLike, minTemp, maxTemp, pressure, humidity, measurementUnit)
     }
 }
