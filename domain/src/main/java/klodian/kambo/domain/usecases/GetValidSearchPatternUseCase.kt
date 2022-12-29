@@ -1,8 +1,6 @@
 package klodian.kambo.domain.usecases
 
 import arrow.core.Either
-import klodian.kambo.domain.WeatherInteractor
-import klodian.kambo.domain.model.HttpRequestError
 import klodian.kambo.domain.model.PatternValidationError
 import javax.inject.Inject
 
