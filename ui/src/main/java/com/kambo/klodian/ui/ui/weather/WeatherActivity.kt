@@ -84,6 +84,7 @@ class WeatherActivity : AppCompatActivity() {
         }
     }
 
+
     // Private fun
     private fun showError(error: WeatherViewModel.SearchError) {
         when (error) {
@@ -153,6 +154,4 @@ class WeatherActivity : AppCompatActivity() {
     private fun setWelcomeEnabled(isEnabled: Boolean) {
         binding.welcomeConstraintLayout.isVisible = isEnabled
     }
-
-
 }

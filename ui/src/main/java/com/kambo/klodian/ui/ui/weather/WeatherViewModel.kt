@@ -2,17 +2,21 @@ package com.kambo.klodian.ui.ui.weather
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.kambo.klodian.entities.model.*
 import com.kambo.klodian.ui.R
 import com.kambo.klodian.ui.ui.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import klodian.kambo.domain.model.*
+import klodian.kambo.domain.model.HttpRequestError
+import klodian.kambo.domain.model.PatternValidationError
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
 import klodian.kambo.domain.usecases.GetWeatherUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -48,47 +52,37 @@ class WeatherViewModel @Inject constructor(
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     private val dateFormatterForTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    private val weatherLiveData =
+    private val uiWeatherInfoFlow =
         MutableStateFlow<Either<SearchError, UiCompleteWeatherInfo?>>(Either.right(null))
 
-    private val welcomeEnabled = MutableStateFlow(true)
+    private val welcomeEnabledFlow = MutableStateFlow(true)
+    private val measurementUnitFlow = MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
+    private val isLoadingFlow = MutableStateFlow(false)
 
-    private val measurementUnitLiveData =
-        MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
-
-    private val loadingLiveData = MutableStateFlow(false)
-
-    fun getWeatherResult(): Flow<Either<SearchError, UiCompleteWeatherInfo?>> = weatherLiveData
-    fun isLoading(): Flow<Boolean> = loadingLiveData
-    fun isWelcomeEnabled(): Flow<Boolean> = welcomeEnabled
+    fun getWeatherResult(): Flow<Either<SearchError, UiCompleteWeatherInfo?>> = uiWeatherInfoFlow
+    fun isLoading(): Flow<Boolean> = isLoadingFlow
+    fun isWelcomeEnabled(): Flow<Boolean> = welcomeEnabledFlow
 
     fun toggleTemperature() {
 
         viewModelScope.launch {
-            val newTempUnit = when (measurementUnitLiveData.value) {
+            val newTempUnit = when (measurementUnitFlow.value) {
                 TemperatureUnit.Fahrenheit -> TemperatureUnit.Celsius
                 TemperatureUnit.Celsius -> TemperatureUnit.Fahrenheit
             }
 
-            measurementUnitLiveData.tryEmit(newTempUnit)
+            measurementUnitFlow.tryEmit(newTempUnit)
 
-            weatherLiveData.value.let {
-                it.orNull()?.let { uiCompleteWeatherInfo ->
-                    weatherLiveData.tryEmit(
-                        Either.right(
-                            getUpdateTemperature(
-                                uiCompleteWeatherInfo,
-                                newTempUnit
-                            )
-                        )
-                    )
-                }
+            uiWeatherInfoFlow.value.orNull()?.let { uiCompleteWeatherInfo ->
+                uiWeatherInfoFlow.tryEmit(
+                    Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
+                )
             }
         }
     }
 
     fun getTemperature(): Flow<UiTemperatureMeasurementUnit> {
-        return measurementUnitLiveData.map {
+        return measurementUnitFlow.map {
             when (it) {
                 TemperatureUnit.Fahrenheit -> UiTemperatureMeasurementUnit.Celsius
                 TemperatureUnit.Celsius -> UiTemperatureMeasurementUnit.Fahrenheit
@@ -100,12 +94,12 @@ class WeatherViewModel @Inject constructor(
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
 
-                loadingLiveData.tryEmit(true)
+                isLoadingFlow.tryEmit(true)
 
-                welcomeEnabled.tryEmit(false)
+                welcomeEnabledFlow.tryEmit(false)
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    val measurementUnit = measurementUnitLiveData.value.toTemperatureUnit()
+                    val measurementUnit = measurementUnitFlow.value
 
                     getWeatherUseCase(
                         cityName = correctedPattern,
@@ -114,8 +108,8 @@ class WeatherViewModel @Inject constructor(
                         zoneId = ZoneId.systemDefault()
                     ).fold(
                         ifLeft = { safeRequestError ->
-                            loadingLiveData.tryEmit(false)
-                            weatherLiveData.tryEmit(
+                            isLoadingFlow.tryEmit(false)
+                            uiWeatherInfoFlow.tryEmit(
                                 Either.left(
                                     safeRequestError.toSearchError(correctedPattern)
                                 )
@@ -123,16 +117,16 @@ class WeatherViewModel @Inject constructor(
                         },
                         ifRight = { forecastWeather ->
                             val temperatureUnit =
-                                measurementUnitLiveData.value ?: TemperatureUnit.Celsius
-                            loadingLiveData.tryEmit(false)
-                            weatherLiveData.tryEmit(
+                                measurementUnitFlow.value ?: TemperatureUnit.Celsius
+                            isLoadingFlow.tryEmit(false)
+                            uiWeatherInfoFlow.tryEmit(
                                 Either.right(forecastWeather.toUiCompleteWeatherInfo(temperatureUnit))
                             )
                         })
                 }
             },
             ifLeft = { patternValidationError ->
-                weatherLiveData.tryEmit(Either.left(patternValidationError.toSearchError()))
+                uiWeatherInfoFlow.tryEmit(Either.left(patternValidationError.toSearchError()))
             })
     }
 
@@ -245,12 +239,5 @@ class WeatherViewModel @Inject constructor(
             cityNameResult = "${city}, $country",
             displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
         )
-    }
-
-    private fun TemperatureUnit.toTemperatureUnit(): TemperatureUnit {
-        return when (this) {
-            TemperatureUnit.Celsius -> TemperatureUnit.Celsius
-            TemperatureUnit.Fahrenheit -> TemperatureUnit.Fahrenheit
-        }
     }
 }
