@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.3"
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
     }
 }
@@ -30,7 +30,7 @@ ext {
             compileSdkVersion: 33,
             minSdkVersion    : 21,
             targetSdkVersion : 33,
-            dagger           : "2.43.2",
+            dagger           : "2.45",
             lifecycle        : "2.5.1",
             coroutines       : "1.6.3"
     ]
@@ -52,8 +52,8 @@ ext {
                     lifecycleExtensions: "androidx.lifecycle:lifecycle-extensions:2.2.0",
                     viewModelKtx       : "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}",
                     runtimeKtx         : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
-                    hilt               : "com.google.dagger:hilt-android:2.44",
-                    hiltKapt           : "com.google.dagger:hilt-compiler:2.44"
+                    hilt               : "com.google.dagger:hilt-android:2.45",
+                    hiltKapt           : "com.google.dagger:hilt-compiler:2.45"
             ]
     ]
 }

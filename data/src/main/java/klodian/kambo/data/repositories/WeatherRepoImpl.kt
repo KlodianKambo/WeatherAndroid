@@ -48,6 +48,29 @@ class WeatherRepoImpl @Inject constructor(
         }
     }
 
+    override suspend fun getWeatherByLocation(
+        latitude: Double,
+        longitude: Double,
+        locale: Locale,
+        measurementUnit: TemperatureUnit,
+        zoneId: ZoneId
+    ): Either<HttpRequestError, ForecastWeather> = coroutineScope {
+
+        val unit = when (measurementUnit) {
+            TemperatureUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
+            TemperatureUnit.Celsius -> TEMPERATURE_UNIT_METRIC
+        }
+
+        performSafeRequest {
+            weatherApi.getWeatherByLocation(
+                latitude = latitude,
+                longitude = longitude,
+                language = locale.language,
+                units = unit
+            ).toForecastWeather(measurementUnit, zoneId)
+        }
+    }
+
     private fun WeatherDto.toWeather(): Weather {
         return Weather(
             id = id,

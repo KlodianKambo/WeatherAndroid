@@ -9,7 +9,9 @@ import dagger.hilt.components.SingletonComponent
 import klodian.kambo.data.DataConfiguration
 import klodian.kambo.data.DataConfigurationImpl
 import klodian.kambo.data.api.WeatherApi
+import klodian.kambo.data.controllers.LocationRepositoryImpl
 import klodian.kambo.data.repositories.WeatherRepoImpl
+import klodian.kambo.domain.repositories.LocationRepository
 import klodian.kambo.domain.repositories.WeatherRepo
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -67,11 +69,15 @@ class DataModule {
     fun providesAccountApi(retrofit: Retrofit): WeatherApi = retrofit.create()
 }
 
-@Module(includes = [DataModule::class])
+@Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
     @Binds
-    @Singleton
     internal abstract fun bindsRepository(imp: WeatherRepoImpl): WeatherRepo
+
+
+    @Binds
+    internal abstract fun bindsLocationRepository(imp: LocationRepositoryImpl): LocationRepository
+
 }
