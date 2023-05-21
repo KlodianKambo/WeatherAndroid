@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/spring_white"
+    tools:context="com.kambo.klodian.ui.ui.weather.WeatherActivity">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size16"
+        android:hint="@string/city_name_state_country_hint"
+        app:endIconMode="clear_text"
+        android:layout_marginEnd="@dimen/size16"
+        android:layout_marginStart="@dimen/size24"
+        app:layout_constraintEnd_toStartOf="@+id/location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/city_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/spring_white"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_my_location"
+        app:fabSize="mini"
+        app:tint="@color/white"
+        android:elevation="@dimen/size0"
+        android:translationZ="@dimen/size0"
+        android:backgroundTint="@color/yellow"
+        android:layout_marginEnd="@dimen/size16"
+        app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_error_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size0"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+        <ImageView
+            android:id="@+id/search_error_image_view"
+            android:layout_width="@dimen/size60"
+            android:layout_height="@dimen/size60"
+            android:src="@drawable/ic_baseline_error_outline"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3" />
+
+        <TextView
+            android:id="@+id/search_error_message_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size16"
+            android:layout_marginTop="@dimen/size32"
+            android:layout_marginEnd="@dimen/size16"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/search_error_image_view"
+            tools:text="Error text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/welcome_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size0"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+
+        <TextView
+            android:id="@+id/welcome_title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size16"
+            android:layout_marginEnd="@dimen/size16"
+            android:layout_marginBottom="@dimen/size32"
+            android:gravity="center"
+            android:text="@string/welcome_title"
+            android:textSize="@dimen/font16"
+            app:layout_constraintBottom_toTopOf="@+id/welcome_image_view" />
+
+        <ImageView
+            android:id="@+id/welcome_image_view"
+            android:layout_width="@dimen/size80"
+            android:layout_height="@dimen/size80"
+            android:src="@drawable/ic_weather_partly_snowy_rainy"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3"
+            app:tint="@color/light_blue" />
+
+        <TextView
+            android:id="@+id/welcome_message_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size16"
+            android:layout_marginTop="@dimen/size32"
+            android:layout_marginEnd="@dimen/size16"
+            android:gravity="center"
+            android:text="@string/welcome_message"
+            android:textSize="@dimen/font16"
+            app:layout_constraintTop_toBottomOf="@+id/welcome_image_view" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/results_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/result_city_text_view"
+            android:layout_width="@dimen/size0"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size16"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/font18"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/main_degree_fab"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Marostica" />
+
+        <TextView
+            android:id="@+id/result_date_text_view"
+            android:layout_width="@dimen/size0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size8"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/result_city_text_view"
+            app:layout_constraintStart_toStartOf="@+id/result_city_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/result_city_text_view"
+            tools:text="15 March, 2021" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/main_degree_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size16"
+            android:backgroundTint="@color/yellow"
+            android:elevation="@dimen/size0"
+            android:src="@drawable/ic_temperature_fahrenheit"
+            android:tintMode="src_in"
+            app:fabCustomSize="@dimen/size40"
+            app:layout_constraintBottom_toBottomOf="@+id/result_date_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/result_city_text_view"
+            app:tint="@color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/weather_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/size16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/result_date_text_view"
+            app:layout_constraintVertical_bias="0"
+            tools:layout_editor_absoluteX="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_loading_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:elevation="@dimen/size16"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#aa000000"/>
+
+        <ProgressBar
+            android:id="@+id/search_progress_bar"
+            android:layout_width="@dimen/size80"
+            android:layout_height="@dimen/size80"
+            android:alpha="1"
+            android:src="@drawable/ic_baseline_error_outline"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias=".46" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,59 @@
+buildscript {
+    ext.kotlin_version = "1.7.0"
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
+    }
+}
+
+plugins {
+    id 'com.google.dagger.hilt.android' version '2.44' apply false
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    versions = [
+            compileSdkVersion: 33,
+            minSdkVersion    : 21,
+            targetSdkVersion : 33,
+            dagger           : "2.45",
+            lifecycle        : "2.5.1",
+            coroutines       : "1.6.3"
+    ]
+
+    libs = [
+            test: [
+                    kotlinTest    : "org.jetbrains.kotlin:kotlin-test:$kotlin_version",
+                    coroutinesTest: "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}",
+                    kotlinTestImpl: "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+            ],
+            main: [
+                    inject             : "javax.inject:javax.inject:1",
+                    arrow              : "io.arrow-kt:arrow-core:0.11.0",
+                    kotlin             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
+                    timber             : "com.jakewharton.timber:timber:4.7.1",
+                    androidKtx         : "androidx.core:core-ktx:1.9.0",
+                    fragmentKtx        : "androidx.fragment:fragment-ktx:1.5.5",
+                    appcompat          : "androidx.appcompat:appcompat:1.0.2",
+                    lifecycleExtensions: "androidx.lifecycle:lifecycle-extensions:2.2.0",
+                    viewModelKtx       : "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}",
+                    runtimeKtx         : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
+                    hilt               : "com.google.dagger:hilt-android:2.45",
+                    hiltKapt           : "com.google.dagger:hilt-compiler:2.45"
+            ]
+    ]
+}

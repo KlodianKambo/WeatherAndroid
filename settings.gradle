@@ -1,0 +1,6 @@
+include ':data'
+include ':domain'
+include ':app'
+rootProject.name = "Weather"
+include ':ui'
+include ':entities'
