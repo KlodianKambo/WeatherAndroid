@@ -1,9 +1,9 @@
 package klodian.kambo.domain.repositories
 
 import arrow.core.Either
-import klodian.kambo.domain.model.ForecastWeather
-import klodian.kambo.domain.model.SafeRequestError
-import klodian.kambo.domain.model.TemperatureMeasurementUnit
+import com.kambo.klodian.entities.model.ForecastWeather
+import klodian.kambo.domain.model.HttpRequestError
+import com.kambo.klodian.entities.model.TemperatureUnit
 import java.time.ZoneId
 import java.util.*
 
@@ -11,7 +11,15 @@ interface WeatherRepo {
     suspend fun getWeather(
         cityName: String,
         locale: Locale,
-        measurementUnit: TemperatureMeasurementUnit,
+        measurementUnit: TemperatureUnit,
         zoneId: ZoneId
-    ): Either<SafeRequestError, ForecastWeather>
+    ): Either<HttpRequestError, ForecastWeather>
+
+    suspend fun getWeatherByLocation(
+        latitude: Double,
+        longitude: Double,
+        locale: Locale,
+        measurementUnit: TemperatureUnit,
+        zoneId: ZoneId
+    ): Either<HttpRequestError, ForecastWeather>
 }
