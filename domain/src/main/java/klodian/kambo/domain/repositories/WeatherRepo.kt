@@ -14,4 +14,12 @@ interface WeatherRepo {
         measurementUnit: TemperatureUnit,
         zoneId: ZoneId
     ): Either<HttpRequestError, ForecastWeather>
+
+    suspend fun getWeatherByLocation(
+        latitude: Double,
+        longitude: Double,
+        locale: Locale,
+        measurementUnit: TemperatureUnit,
+        zoneId: ZoneId
+    ): Either<HttpRequestError, ForecastWeather>
 }

@@ -11,4 +11,12 @@ interface WeatherApi {
         @Query("lang") language: String,
         @Query("units") units: String
     ): ForecastResponseDto
+
+    @GET("data/2.5/forecast")
+    suspend fun getWeatherByLocation(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
+        @Query("lang") language: String,
+        @Query("units") units: String
+    ): ForecastResponseDto
 }

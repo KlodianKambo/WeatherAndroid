@@ -12,7 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import klodian.kambo.domain.model.HttpRequestError
 import klodian.kambo.domain.model.PatternValidationError
 import klodian.kambo.domain.usecases.GetValidSearchPatternUseCase
-import klodian.kambo.domain.usecases.GetWeatherUseCase
+import klodian.kambo.domain.usecases.GetWeatherByCityNameUseCase
+import klodian.kambo.domain.usecases.GetWeatherByLocationUseCase
+import klodian.kambo.domain.usecases.location.GetLocationUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,36 +29,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val getWeatherUseCase: GetWeatherUseCase,
+    private val getWeatherUseCase: GetWeatherByCityNameUseCase,
+    private val getWeatherByLocationUseCase: GetWeatherByLocationUseCase,
     private val getValidSearchPatternUseCase: GetValidSearchPatternUseCase,
+    private val getLocationUseCase: GetLocationUseCase,
     private val getTemperatureUseCase: com.kambo.klodian.entities.businessrules.GetTemperatureUseCase
 ) : ViewModel() {
-
-    sealed class SearchError(
-        @StringRes val errorMessageResId: Int,
-        @DrawableRes val iconResId: Int? = null
-    ) {
-        object FieldCannotBeNull : SearchError(R.string.search_input_error_empty)
-        object Only3ParamsAreAllowed : SearchError(R.string.search_input_error_too_many_params)
-        object PleaseInsertTheCity : SearchError(R.string.search_input_error_no_param_found)
-
-        object NoInternet :
-            SearchError(R.string.search_error_no_internet, R.drawable.ic_baseline_cloud_off)
-
-        data class WeatherNotFound(val searchValue: String) :
-            SearchError(R.string.search_error_not_found, R.drawable.ic_baseline_live_help)
-
-        object Generic :
-            SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
-    }
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     private val dateFormatterForTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
     private val uiWeatherInfoFlow =
         MutableStateFlow<Either<SearchError, UiCompleteWeatherInfo?>>(Either.right(null))
 
-    private val welcomeEnabledFlow = MutableStateFlow(true)
     private val measurementUnitFlow = MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
+    private val welcomeEnabledFlow = MutableStateFlow(true)
     private val isLoadingFlow = MutableStateFlow(false)
 
     fun getWeatherResult(): Flow<Either<SearchError, UiCompleteWeatherInfo?>> = uiWeatherInfoFlow
@@ -95,7 +81,6 @@ class WeatherViewModel @Inject constructor(
             ifRight = { correctedPattern ->
 
                 isLoadingFlow.tryEmit(true)
-
                 welcomeEnabledFlow.tryEmit(false)
 
                 viewModelScope.launch(Dispatchers.IO) {
@@ -130,6 +115,49 @@ class WeatherViewModel @Inject constructor(
             })
     }
 
+    fun fetchByCurrentLocation(locale: Locale){
+        isLoadingFlow.tryEmit(true)
+        welcomeEnabledFlow.tryEmit(false)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val measurementUnit = measurementUnitFlow.value
+            getLocationUseCase()
+                .fold(
+                    ifLeft = {
+                        isLoadingFlow.tryEmit(false)
+                        uiWeatherInfoFlow.tryEmit(
+                            Either.left(SearchError.PermissionsDenied)
+                        )
+                    },
+                    ifRight = {
+                        getWeatherByLocationUseCase(
+                            latitude = it.latitude,
+                            longitude = it.longitude,
+                            locale = locale,
+                            measurementUnit = measurementUnit,
+                            zoneId = ZoneId.systemDefault()
+                        ).fold(
+                            ifLeft = { safeRequestError ->
+                                isLoadingFlow.tryEmit(false)
+
+                                uiWeatherInfoFlow.tryEmit(
+                                    Either.left(safeRequestError.toSearchError(""))
+                                )
+
+                            },
+                            ifRight = { forecastWeather ->
+                                val temperatureUnit = measurementUnitFlow.value
+                                isLoadingFlow.tryEmit(false)
+                                uiWeatherInfoFlow.tryEmit(
+                                    Either.right(
+                                        forecastWeather.toUiCompleteWeatherInfo(temperatureUnit)
+                                    )
+                                )
+                            })
+                    }
+                )
+        }
+    }
 
     // Private fun *********************************************************************************
     private fun Weather.toUiWeather(): UiWeather {
@@ -240,4 +268,26 @@ class WeatherViewModel @Inject constructor(
             displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
         )
     }
+}
+
+sealed class SearchError(
+    @StringRes val errorMessageResId: Int,
+    @DrawableRes val iconResId: Int? = null
+) {
+    object FieldCannotBeNull : SearchError(R.string.search_input_error_empty)
+    object Only3ParamsAreAllowed : SearchError(R.string.search_input_error_too_many_params)
+    object PleaseInsertTheCity : SearchError(R.string.search_input_error_no_param_found)
+
+    object NoInternet :
+        SearchError(R.string.search_error_no_internet, R.drawable.ic_baseline_cloud_off)
+
+    data class WeatherNotFound(val searchValue: String) :
+        SearchError(R.string.search_error_not_found, R.drawable.ic_baseline_live_help)
+
+
+    object PermissionsDenied :
+        SearchError(R.string.search_error_permission_denied, R.drawable.ic_baseline_error_outline)
+
+    object Generic :
+        SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
 }

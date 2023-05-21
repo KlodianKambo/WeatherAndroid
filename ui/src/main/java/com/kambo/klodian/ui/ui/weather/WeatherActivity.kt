@@ -1,5 +1,7 @@
 package com.kambo.klodian.ui.ui.weather
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
@@ -7,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +26,10 @@ import java.util.*
 
 @AndroidEntryPoint
 class WeatherActivity : AppCompatActivity() {
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 1001
+    }
 
     private val viewModel: WeatherViewModel by viewModels()
     private val weatherAdapter = DateWeatherRecyclerViewAdapter()
@@ -81,23 +88,54 @@ class WeatherActivity : AppCompatActivity() {
                 }
                 false
             })
+
+            binding.location.setOnClickListener {
+                if (hasGeolocPermissions()) {
+                    viewModel.fetchByCurrentLocation(Locale.getDefault())
+                } else {
+                    requestLocationPermissions()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                grantResults[1] == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permissions granted, start location updates
+                viewModel.fetchByCurrentLocation(Locale.getDefault())
+            } else {
+                // Permissions denied, handle accordingly (e.g., show an error message)
+                hideResults()
+                setWelcomeEnabled(false)
+                showError(SearchError.PermissionsDenied)
+            }
         }
     }
 
 
     // Private fun
-    private fun showError(error: WeatherViewModel.SearchError) {
+    private fun showError(error: SearchError) {
         when (error) {
-            WeatherViewModel.SearchError.FieldCannotBeNull,
-            WeatherViewModel.SearchError.Only3ParamsAreAllowed,
-            WeatherViewModel.SearchError.PleaseInsertTheCity -> {
-                showSearchValidationError(error.errorMessageResId)
-            }
-            WeatherViewModel.SearchError.NoInternet,
-            WeatherViewModel.SearchError.Generic -> {
-                showSearchResultError(error.iconResId, getString(error.errorMessageResId))
-            }
-            is WeatherViewModel.SearchError.WeatherNotFound -> {
+            SearchError.FieldCannotBeNull,
+            SearchError.Only3ParamsAreAllowed,
+            SearchError.PleaseInsertTheCity -> showSearchValidationError(error.errorMessageResId)
+            SearchError.NoInternet,
+            SearchError.Generic,
+            SearchError.PermissionsDenied -> showSearchResultError(
+                error.iconResId,
+                getString(error.errorMessageResId)
+            )
+            is SearchError.WeatherNotFound -> {
                 val composedStringError = getString(error.errorMessageResId, error.searchValue)
                 showSearchResultError(error.iconResId, composedStringError)
             }
@@ -154,4 +192,25 @@ class WeatherActivity : AppCompatActivity() {
     private fun setWelcomeEnabled(isEnabled: Boolean) {
         binding.welcomeConstraintLayout.isVisible = isEnabled
     }
+
+    private fun requestLocationPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ),
+            PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun hasGeolocPermissions(): Boolean =
+        !(ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED)
 }
