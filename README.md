@@ -1,12 +1,24 @@
 # README #
 
-Weather is a simple weather forecast Android app wrote in kotlin, which uses APIs from [OpenWeatherMap](https://openweathermap.org/forecast5) to fetch 5 day / 3 hour forecast data and display them to the user
+Weather is a simple weather forecast Android app wrote in kotlin, which uses APIs from [OpenWeatherMap](https://openweathermap.org/forecast5) to fetch 5 day / 3 hour forecast data and display them to the user.
 
 ## Quick summary ##
 Fetch weather on a give place with 5 days / 3 hours forecast and display to the user
 
 #### Version 1.0.0 ####
 * Search the weather forecast by place with a pattern like so: _Huntsville_ or _Huntsville, tx, us_ or _Rome, it_
+
+## Technical content ##
+* Kotlin - coroutines - flows
+* D.I. with Hilt
+* Enterprise level Clean Architecture / SOLID principle
+* M-V-VM pattern
+* Multi-Module project
+* Geolocalization and timezones
+* REST with Retrofit2 + OkHttp3
+* CoreLibraryDesugaring
+* Unit tests in JUnit
+* UI/Integration tests Espresso
 
 ### How do I get set up? ###
 
