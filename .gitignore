@@ -1,12 +1,3 @@
-# Created by https://www.toptal.com/developers/gitignore/api/git,java,linux,macos,maven,gradle,kotlin,android,windows,intellij+all,androidstudio
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,java,linux,macos,maven,gradle,kotlin,android,windows,intellij+all,androidstudio
-
-### Android ###
-# Gradle files
-.gradle/
-build/
-
-# Local configuration file (sdk path, etc)
 local.properties
 
 # Log/OS Files
