@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class LocationRepositoryImpl @Inject constructor(
     private val context: Context,
-    @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
+    private val coroutineDispatcher: CoroutineDispatcher
 ) : LocationRepository {
 
     private val fusedLocationClient: FusedLocationProviderClient by lazy {

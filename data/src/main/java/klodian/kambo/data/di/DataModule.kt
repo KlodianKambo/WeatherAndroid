@@ -1,10 +1,12 @@
 package klodian.kambo.data.di
 
+import android.content.Context
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import klodian.kambo.data.DataConfiguration
 import klodian.kambo.data.DataConfigurationImpl
@@ -79,9 +81,14 @@ class RepositoryModule {
     internal fun bindsRepository(
         @IoDispatcher coroutineDispatcher: CoroutineDispatcher,
         weatherApi: WeatherApi,
-        getIconPathUseCase: GetIconPathUseCase,): WeatherRepo = WeatherRepoImpl(weatherApi, getIconPathUseCase, coroutineDispatcher)
+        getIconPathUseCase: GetIconPathUseCase,
+    ): WeatherRepo = WeatherRepoImpl(weatherApi, getIconPathUseCase, coroutineDispatcher)
 
     @Provides
-    internal fun bindsLocationRepository(imp: LocationRepositoryImpl): LocationRepository = imp
+    internal fun bindsLocationRepository(
+        @ApplicationContext context: Context,
+        @IoDispatcher coroutineDispatcher: CoroutineDispatcher
+    ): LocationRepository =
+        LocationRepositoryImpl(context, coroutineDispatcher)
 
 }
