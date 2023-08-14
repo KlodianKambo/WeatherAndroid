@@ -23,7 +23,7 @@ import javax.inject.Inject
 class WeatherRepoImpl @Inject constructor(
     private val weatherApi: WeatherApi,
     private val getIconPathUseCase: GetIconPathUseCase,
-    @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
+    private val coroutineDispatcher: CoroutineDispatcher
 ) : WeatherRepo {
 
     companion object {
