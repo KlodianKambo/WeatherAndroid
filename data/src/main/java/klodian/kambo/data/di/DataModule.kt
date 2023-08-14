@@ -8,11 +8,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import klodian.kambo.data.DataConfiguration
 import klodian.kambo.data.DataConfigurationImpl
+import klodian.kambo.data.GetIconPathUseCase
 import klodian.kambo.data.api.WeatherApi
 import klodian.kambo.data.controllers.LocationRepositoryImpl
 import klodian.kambo.data.repositories.WeatherRepoImpl
 import klodian.kambo.domain.repositories.LocationRepository
 import klodian.kambo.domain.repositories.WeatherRepo
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -71,13 +73,15 @@ class DataModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+class RepositoryModule {
 
-    @Binds
-    internal abstract fun bindsRepository(imp: WeatherRepoImpl): WeatherRepo
+    @Provides
+    internal fun bindsRepository(
+        @IoDispatcher coroutineDispatcher: CoroutineDispatcher,
+        weatherApi: WeatherApi,
+        getIconPathUseCase: GetIconPathUseCase,): WeatherRepo = WeatherRepoImpl(weatherApi, getIconPathUseCase, coroutineDispatcher)
 
-
-    @Binds
-    internal abstract fun bindsLocationRepository(imp: LocationRepositoryImpl): LocationRepository
+    @Provides
+    internal fun bindsLocationRepository(imp: LocationRepositoryImpl): LocationRepository = imp
 
 }
