@@ -13,6 +13,7 @@ import klodian.kambo.domain.model.HttpRequestError
 import klodian.kambo.domain.repositories.WeatherRepo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDateTime
@@ -43,12 +44,14 @@ class WeatherRepoImpl @Inject constructor(
             TemperatureUnit.Celsius -> TEMPERATURE_UNIT_METRIC
         }
 
-        performSafeRequest {
-            weatherApi.getWeather(
-                cityNamePattern = cityName,
-                language = locale.language,
-                units = unit
-            ).toForecastWeather(measurementUnit, zoneId)
+        supervisorScope {
+            performSafeRequest {
+                weatherApi.getWeather(
+                    cityNamePattern = cityName,
+                    language = locale.language,
+                    units = unit
+                ).toForecastWeather(measurementUnit, zoneId)
+            }
         }
     }
 
@@ -65,13 +68,15 @@ class WeatherRepoImpl @Inject constructor(
             TemperatureUnit.Celsius -> TEMPERATURE_UNIT_METRIC
         }
 
-        performSafeRequest {
-            weatherApi.getWeatherByLocation(
-                latitude = latitude,
-                longitude = longitude,
-                language = locale.language,
-                units = unit
-            ).toForecastWeather(measurementUnit, zoneId)
+        supervisorScope {
+            performSafeRequest {
+                weatherApi.getWeatherByLocation(
+                    latitude = latitude,
+                    longitude = longitude,
+                    language = locale.language,
+                    units = unit
+                ).toForecastWeather(measurementUnit, zoneId)
+            }
         }
     }
 
