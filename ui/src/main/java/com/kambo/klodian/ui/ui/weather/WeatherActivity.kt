@@ -5,13 +5,16 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView.OnEditorActionListener
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kambo.klodian.ui.R
 import com.kambo.klodian.ui.databinding.ActivityWeatherBinding
@@ -27,13 +30,32 @@ import java.util.*
 @AndroidEntryPoint
 class WeatherActivity : AppCompatActivity() {
 
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 1001
-    }
-
     private val viewModel: WeatherViewModel by viewModels()
     private val weatherAdapter = DateWeatherRecyclerViewAdapter()
     private lateinit var binding: ActivityWeatherBinding
+
+    private val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                // Precise location access granted.
+                clearErrors()
+                viewModel.fetchByCurrentLocation(Locale.getDefault())
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                // Only approximate location access granted.
+                clearErrors()
+                viewModel.fetchByCurrentLocation(Locale.getDefault())
+            }
+            else -> {
+                // No location access granted.
+                hideResults()
+                setWelcomeEnabled(false)
+                showError(SearchError.PermissionsDenied)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,37 +63,47 @@ class WeatherActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         with(binding) {
+
             weatherRecyclerView.layoutManager = LinearLayoutManager(this.root.context)
             weatherRecyclerView.adapter = weatherAdapter
 
-            lifecycleScope.launch {
-                viewModel.getWeatherResult().collect { result ->
-                    result.fold(
-                        ifLeft = { showError(it) },
-                        ifRight = { uiCompleteWeatherInfo ->
-                            uiCompleteWeatherInfo?.let { showResult(it) }
-                        })
-                }
-            }
-
-            lifecycleScope.launch {
-                viewModel.isWelcomeEnabled().collect { isWelcomeEnabled ->
-                    setWelcomeEnabled(isWelcomeEnabled)
-                }
-            }
-
-            lifecycleScope.launch {
-                viewModel.isLoading().collect { isLoading ->
-                    if (isLoading) {
-                        cityEditText.hideKeyboard()
+            lifecycleScope
+                .launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        viewModel.getWeatherResult().collect { result ->
+                            result.fold(
+                                ifLeft = { showError(it) },
+                                ifRight = { uiCompleteWeatherInfo ->
+                                    uiCompleteWeatherInfo?.let { showResult(it) }
+                                })
+                        }
                     }
-                    showLoading(isLoading)
+                }
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.isWelcomeEnabled().collect { isWelcomeEnabled ->
+                        setWelcomeEnabled(isWelcomeEnabled)
+                    }
                 }
             }
 
             lifecycleScope.launch {
-                viewModel.getTemperature().collect {
-                    mainDegreeFab.setImageResource(it.iconResId)
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.isLoading().collect { isLoading ->
+                        if (isLoading) {
+                            cityEditText.hideKeyboard()
+                        }
+                        showLoading(isLoading)
+                    }
+                }
+            }
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.getTemperature().collect {
+                        mainDegreeFab.setImageResource(it.iconResId)
+                    }
                 }
             }
 
@@ -89,35 +121,19 @@ class WeatherActivity : AppCompatActivity() {
                 false
             })
 
-            binding.location.setOnClickListener {
+            location.setOnClickListener {
                 if (hasGeolocPermissions()) {
                     viewModel.fetchByCurrentLocation(Locale.getDefault())
                 } else {
-                    requestLocationPermissions()
+                    // requestLocationPermissions()
+
+                    locationPermissionRequest.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
                 }
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                grantResults[1] == PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permissions granted, start location updates
-                viewModel.fetchByCurrentLocation(Locale.getDefault())
-            } else {
-                // Permissions denied, handle accordingly (e.g., show an error message)
-                hideResults()
-                setWelcomeEnabled(false)
-                showError(SearchError.PermissionsDenied)
             }
         }
     }
@@ -193,16 +209,6 @@ class WeatherActivity : AppCompatActivity() {
         binding.welcomeConstraintLayout.isVisible = isEnabled
     }
 
-    private fun requestLocationPermissions() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            PERMISSION_REQUEST_CODE
-        )
-    }
 
     private fun hasGeolocPermissions(): Boolean =
         !(ActivityCompat.checkSelfPermission(

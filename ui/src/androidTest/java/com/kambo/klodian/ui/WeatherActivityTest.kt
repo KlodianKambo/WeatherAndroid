@@ -11,8 +11,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
-import com.kambo.klodian.ui.ui.weather.WeatherActivity
 import com.kambo.klodian.ui.matchers.ImeOptionMatcher
+import com.kambo.klodian.ui.ui.weather.WeatherActivity
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
@@ -20,7 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// FIXME test temporary broken due to desugaring library
+// FIXME test temporary broken due to module division
 
 @RunWith(AndroidJUnit4::class)
 class WeatherActivityTest {
