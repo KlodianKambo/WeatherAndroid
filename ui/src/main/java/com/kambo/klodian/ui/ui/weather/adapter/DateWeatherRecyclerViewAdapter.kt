@@ -38,8 +38,7 @@ class DateWeatherRecyclerViewAdapter : RecyclerView.Adapter<DateWeatherViewHolde
 class DateWeatherViewHolder(
     private val binding: ItemDateWeatherBinding,
     private val viewPool: RecyclerView.RecycledViewPool
-) :
-    RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(uiDateWeather: UiDateWeather) {
         binding.dayDateTextView.text = uiDateWeather.displayableDay

@@ -21,6 +21,7 @@ import com.kambo.klodian.ui.databinding.ActivityWeatherBinding
 import com.kambo.klodian.ui.ui.extensions.hideKeyboard
 import com.kambo.klodian.ui.ui.model.UiCompleteWeatherInfo
 import com.kambo.klodian.ui.ui.model.UiDateWeather
+import com.kambo.klodian.ui.ui.model.UiSearchError
 import com.kambo.klodian.ui.ui.weather.adapter.DateWeatherRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,18 +42,18 @@ class WeatherActivity : AppCompatActivity() {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                 // Precise location access granted.
                 clearErrors()
-                viewModel.fetchByCurrentLocation(Locale.getDefault())
+                viewModel.fetchWeatherByCurrentLocation(Locale.getDefault())
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
                 clearErrors()
-                viewModel.fetchByCurrentLocation(Locale.getDefault())
+                viewModel.fetchWeatherByCurrentLocation(Locale.getDefault())
             }
             else -> {
                 // No location access granted.
                 hideResults()
                 setWelcomeEnabled(false)
-                showError(SearchError.PermissionsDenied)
+                showError(UiSearchError.PermissionsDenied)
             }
         }
     }
@@ -70,7 +71,7 @@ class WeatherActivity : AppCompatActivity() {
             lifecycleScope
                 .launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        viewModel.getWeatherResult().collect { result ->
+                        viewModel.uiWeatherInfoFlow.collect { result ->
                             result.fold(
                                 ifLeft = { showError(it) },
                                 ifRight = { uiCompleteWeatherInfo ->
@@ -82,7 +83,7 @@ class WeatherActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.isWelcomeEnabled().collect { isWelcomeEnabled ->
+                    viewModel.welcomeEnabledFlow.collect { isWelcomeEnabled ->
                         setWelcomeEnabled(isWelcomeEnabled)
                     }
                 }
@@ -90,7 +91,7 @@ class WeatherActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.isLoading().collect { isLoading ->
+                    viewModel.isLoadingFlow.collect { isLoading ->
                         if (isLoading) {
                             cityEditText.hideKeyboard()
                         }
@@ -101,7 +102,7 @@ class WeatherActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.getTemperature().collect {
+                    viewModel.uiTemperatureMeasurementUnitFlow.collect {
                         mainDegreeFab.setImageResource(it.iconResId)
                     }
                 }
@@ -123,7 +124,7 @@ class WeatherActivity : AppCompatActivity() {
 
             location.setOnClickListener {
                 if (hasGeolocPermissions()) {
-                    viewModel.fetchByCurrentLocation(Locale.getDefault())
+                    viewModel.fetchWeatherByCurrentLocation(Locale.getDefault())
                 } else {
                     // requestLocationPermissions()
 
@@ -140,18 +141,18 @@ class WeatherActivity : AppCompatActivity() {
 
 
     // Private fun
-    private fun showError(error: SearchError) {
+    private fun showError(error: UiSearchError) {
         when (error) {
-            SearchError.FieldCannotBeNull,
-            SearchError.Only3ParamsAreAllowed,
-            SearchError.PleaseInsertTheCity -> showSearchValidationError(error.errorMessageResId)
-            SearchError.NoInternet,
-            SearchError.Generic,
-            SearchError.PermissionsDenied -> showSearchResultError(
+            UiSearchError.FieldCannotBeNull,
+            UiSearchError.Only3ParamsAreAllowed,
+            UiSearchError.PleaseInsertTheCity -> showSearchValidationError(error.errorMessageResId)
+            UiSearchError.NoInternet,
+            UiSearchError.Generic,
+            UiSearchError.PermissionsDenied -> showSearchResultError(
                 error.iconResId,
                 getString(error.errorMessageResId)
             )
-            is SearchError.WeatherNotFound -> {
+            is UiSearchError.WeatherNotFound -> {
                 val composedStringError = getString(error.errorMessageResId, error.searchValue)
                 showSearchResultError(error.iconResId, composedStringError)
             }

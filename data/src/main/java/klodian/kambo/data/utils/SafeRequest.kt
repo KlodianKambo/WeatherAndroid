@@ -5,7 +5,7 @@ import klodian.kambo.domain.model.HttpRequestError
 import retrofit2.HttpException
 import java.io.IOException
 
-suspend fun <T : Any> performSafeRequest(requestFunc: suspend () -> T): Either<HttpRequestError, T> {
+internal suspend fun <T : Any> performSafeRequest(requestFunc: suspend () -> T): Either<HttpRequestError, T> {
     return try {
         Either.right(requestFunc.invoke())
     } catch (throwable: Throwable) {

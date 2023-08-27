@@ -4,15 +4,13 @@ import arrow.core.Either
 import com.kambo.klodian.entities.model.*
 import klodian.kambo.data.GetIconPathUseCase
 import klodian.kambo.data.api.WeatherApi
-import klodian.kambo.data.di.IoDispatcher
 import klodian.kambo.data.model.ForecastResponseDto
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
 import klodian.kambo.data.utils.performSafeRequest
 import klodian.kambo.domain.model.HttpRequestError
-import klodian.kambo.domain.repositories.WeatherRepo
+import klodian.kambo.domain.repositories.WeatherRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -21,11 +19,11 @@ import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
-class WeatherRepoImpl @Inject constructor(
+internal class WeatherRepositoryImpl @Inject constructor(
     private val weatherApi: WeatherApi,
     private val getIconPathUseCase: GetIconPathUseCase,
     private val coroutineDispatcher: CoroutineDispatcher
-) : WeatherRepo {
+) : WeatherRepository {
 
     companion object {
         private const val TEMPERATURE_UNIT_IMPERIAL = "imperial"
@@ -61,7 +59,7 @@ class WeatherRepoImpl @Inject constructor(
         locale: Locale,
         measurementUnit: TemperatureUnit,
         zoneId: ZoneId
-    ): Either<HttpRequestError, ForecastWeather> = coroutineScope {
+    ): Either<HttpRequestError, ForecastWeather> = withContext(coroutineDispatcher) {
 
         val unit = when (measurementUnit) {
             TemperatureUnit.Fahrenheit -> TEMPERATURE_UNIT_IMPERIAL
@@ -80,6 +78,10 @@ class WeatherRepoImpl @Inject constructor(
         }
     }
 
+
+    /***********************************************************************************************
+     * Private fun
+     **********************************************************************************************/
     private fun WeatherDto.toWeather(): Weather {
         return Weather(
             id = id,

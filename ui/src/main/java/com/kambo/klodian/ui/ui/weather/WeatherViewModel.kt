@@ -1,12 +1,9 @@
 package com.kambo.klodian.ui.ui.weather
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.kambo.klodian.entities.model.*
-import com.kambo.klodian.ui.R
 import com.kambo.klodian.ui.ui.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import klodian.kambo.domain.model.HttpRequestError
@@ -38,53 +35,51 @@ class WeatherViewModel @Inject constructor(
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     private val dateFormatterForTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    private val uiWeatherInfoFlow =
-        MutableStateFlow<Either<SearchError, UiCompleteWeatherInfo?>>(Either.right(null))
+    private val _uiWeatherInfoFlow =
+        MutableStateFlow<Either<UiSearchError, UiCompleteWeatherInfo?>>(Either.right(null))
 
-    private val measurementUnitFlow = MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
-    private val welcomeEnabledFlow = MutableStateFlow(true)
-    private val isLoadingFlow = MutableStateFlow(false)
+    private val _measurementUnitFlow = MutableStateFlow<TemperatureUnit>(TemperatureUnit.Celsius)
+    private val _welcomeEnabledFlow = MutableStateFlow(true)
+    private val _isLoadingFlow = MutableStateFlow(false)
 
-    fun getWeatherResult(): Flow<Either<SearchError, UiCompleteWeatherInfo?>> = uiWeatherInfoFlow
-    fun isLoading(): Flow<Boolean> = isLoadingFlow
-    fun isWelcomeEnabled(): Flow<Boolean> = welcomeEnabledFlow
+    val uiWeatherInfoFlow: Flow<Either<UiSearchError, UiCompleteWeatherInfo?>> = _uiWeatherInfoFlow
+    val isLoadingFlow: Flow<Boolean> = _isLoadingFlow
+    val welcomeEnabledFlow: Flow<Boolean> = _welcomeEnabledFlow
+    val uiTemperatureMeasurementUnitFlow: Flow<UiTemperatureMeasurementUnit> =
+        _measurementUnitFlow.map {
+            when (it) {
+                TemperatureUnit.Fahrenheit -> UiTemperatureMeasurementUnit.Celsius
+                TemperatureUnit.Celsius -> UiTemperatureMeasurementUnit.Fahrenheit
+            }
+        }
 
     fun toggleTemperature() {
-
         viewModelScope.launch {
-            val newTempUnit = when (measurementUnitFlow.value) {
+            val newTempUnit = when (_measurementUnitFlow.value) {
                 TemperatureUnit.Fahrenheit -> TemperatureUnit.Celsius
                 TemperatureUnit.Celsius -> TemperatureUnit.Fahrenheit
             }
 
-            measurementUnitFlow.tryEmit(newTempUnit)
+            _measurementUnitFlow.tryEmit(newTempUnit)
 
-            uiWeatherInfoFlow.value.orNull()?.let { uiCompleteWeatherInfo ->
-                uiWeatherInfoFlow.tryEmit(
+            _uiWeatherInfoFlow.value.orNull()?.let { uiCompleteWeatherInfo ->
+                _uiWeatherInfoFlow.tryEmit(
                     Either.right(getUpdateTemperature(uiCompleteWeatherInfo, newTempUnit))
                 )
             }
         }
     }
 
-    fun getTemperature(): Flow<UiTemperatureMeasurementUnit> {
-        return measurementUnitFlow.map {
-            when (it) {
-                TemperatureUnit.Fahrenheit -> UiTemperatureMeasurementUnit.Celsius
-                TemperatureUnit.Celsius -> UiTemperatureMeasurementUnit.Fahrenheit
-            }
-        }
-    }
 
     fun getWeather(pattern: String, locale: Locale) {
         getValidSearchPatternUseCase(pattern).fold(
             ifRight = { correctedPattern ->
 
-                isLoadingFlow.tryEmit(true)
-                welcomeEnabledFlow.tryEmit(false)
+                _isLoadingFlow.tryEmit(true)
+                _welcomeEnabledFlow.tryEmit(false)
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    val measurementUnit = measurementUnitFlow.value
+                    val measurementUnit = _measurementUnitFlow.value
 
                     getWeatherUseCase(
                         cityName = correctedPattern,
@@ -93,8 +88,8 @@ class WeatherViewModel @Inject constructor(
                         zoneId = ZoneId.systemDefault()
                     ).fold(
                         ifLeft = { safeRequestError ->
-                            isLoadingFlow.tryEmit(false)
-                            uiWeatherInfoFlow.tryEmit(
+                            _isLoadingFlow.tryEmit(false)
+                            _uiWeatherInfoFlow.tryEmit(
                                 Either.left(
                                     safeRequestError.toSearchError(correctedPattern)
                                 )
@@ -102,31 +97,31 @@ class WeatherViewModel @Inject constructor(
                         },
                         ifRight = { forecastWeather ->
                             val temperatureUnit =
-                                measurementUnitFlow.value ?: TemperatureUnit.Celsius
-                            isLoadingFlow.tryEmit(false)
-                            uiWeatherInfoFlow.tryEmit(
+                                _measurementUnitFlow.value ?: TemperatureUnit.Celsius
+                            _isLoadingFlow.tryEmit(false)
+                            _uiWeatherInfoFlow.tryEmit(
                                 Either.right(forecastWeather.toUiCompleteWeatherInfo(temperatureUnit))
                             )
                         })
                 }
             },
             ifLeft = { patternValidationError ->
-                uiWeatherInfoFlow.tryEmit(Either.left(patternValidationError.toSearchError()))
+                _uiWeatherInfoFlow.tryEmit(Either.left(patternValidationError.toSearchError()))
             })
     }
 
-    fun fetchByCurrentLocation(locale: Locale){
-        isLoadingFlow.tryEmit(true)
-        welcomeEnabledFlow.tryEmit(false)
+    fun fetchWeatherByCurrentLocation(locale: Locale) {
+        _isLoadingFlow.tryEmit(true)
+        _welcomeEnabledFlow.tryEmit(false)
 
         viewModelScope.launch(Dispatchers.IO) {
-            val measurementUnit = measurementUnitFlow.value
+            val measurementUnit = _measurementUnitFlow.value
             getLocationUseCase()
                 .fold(
                     ifLeft = {
-                        isLoadingFlow.tryEmit(false)
-                        uiWeatherInfoFlow.tryEmit(
-                            Either.left(SearchError.PermissionsDenied)
+                        _isLoadingFlow.tryEmit(false)
+                        _uiWeatherInfoFlow.tryEmit(
+                            Either.left(UiSearchError.PermissionsDenied)
                         )
                     },
                     ifRight = {
@@ -138,17 +133,17 @@ class WeatherViewModel @Inject constructor(
                             zoneId = ZoneId.systemDefault()
                         ).fold(
                             ifLeft = { safeRequestError ->
-                                isLoadingFlow.tryEmit(false)
+                                _isLoadingFlow.tryEmit(false)
 
-                                uiWeatherInfoFlow.tryEmit(
+                                _uiWeatherInfoFlow.tryEmit(
                                     Either.left(safeRequestError.toSearchError(""))
                                 )
 
                             },
                             ifRight = { forecastWeather ->
-                                val temperatureUnit = measurementUnitFlow.value
-                                isLoadingFlow.tryEmit(false)
-                                uiWeatherInfoFlow.tryEmit(
+                                val temperatureUnit = _measurementUnitFlow.value
+                                _isLoadingFlow.tryEmit(false)
+                                _uiWeatherInfoFlow.tryEmit(
                                     Either.right(
                                         forecastWeather.toUiCompleteWeatherInfo(temperatureUnit)
                                     )
@@ -212,18 +207,18 @@ class WeatherViewModel @Inject constructor(
     }
 
 
-    private fun PatternValidationError.toSearchError(): SearchError =
+    private fun PatternValidationError.toSearchError(): UiSearchError =
         when (this) {
-            PatternValidationError.NullOrEmptyPattern -> SearchError.FieldCannotBeNull
-            PatternValidationError.TooManyCommaParams -> SearchError.Only3ParamsAreAllowed
-            PatternValidationError.NoParamsFound -> SearchError.PleaseInsertTheCity
+            PatternValidationError.NullOrEmptyPattern -> UiSearchError.FieldCannotBeNull
+            PatternValidationError.TooManyCommaParams -> UiSearchError.Only3ParamsAreAllowed
+            PatternValidationError.NoParamsFound -> UiSearchError.PleaseInsertTheCity
         }
 
-    private fun HttpRequestError.toSearchError(searchedPattern: String): SearchError {
+    private fun HttpRequestError.toSearchError(searchedPattern: String): UiSearchError {
         return when (this) {
-            HttpRequestError.Generic -> SearchError.Generic
-            HttpRequestError.NetworkError -> SearchError.NoInternet
-            HttpRequestError.NotFound -> SearchError.WeatherNotFound(
+            HttpRequestError.Generic -> UiSearchError.Generic
+            HttpRequestError.NetworkError -> UiSearchError.NoInternet
+            HttpRequestError.NotFound -> UiSearchError.WeatherNotFound(
                 searchedPattern
             )
         }
@@ -268,26 +263,4 @@ class WeatherViewModel @Inject constructor(
             displayableTimeStamp = LocalDateTime.now().format(dateFormatter)
         )
     }
-}
-
-sealed class SearchError(
-    @StringRes val errorMessageResId: Int,
-    @DrawableRes val iconResId: Int? = null
-) {
-    object FieldCannotBeNull : SearchError(R.string.search_input_error_empty)
-    object Only3ParamsAreAllowed : SearchError(R.string.search_input_error_too_many_params)
-    object PleaseInsertTheCity : SearchError(R.string.search_input_error_no_param_found)
-
-    object NoInternet :
-        SearchError(R.string.search_error_no_internet, R.drawable.ic_baseline_cloud_off)
-
-    data class WeatherNotFound(val searchValue: String) :
-        SearchError(R.string.search_error_not_found, R.drawable.ic_baseline_live_help)
-
-
-    object PermissionsDenied :
-        SearchError(R.string.search_error_permission_denied, R.drawable.ic_baseline_error_outline)
-
-    object Generic :
-        SearchError(R.string.search_error_generic, R.drawable.ic_baseline_error_outline)
 }
