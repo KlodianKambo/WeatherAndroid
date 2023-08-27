@@ -39,6 +39,9 @@ android {
 
 dependencies {
 
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+
     implementation project(':domain')
 
     implementation libs.main.kotlin
@@ -53,9 +56,10 @@ dependencies {
     // TEST
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test:core-ktx:1.5.0'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation libs.main.hilt
     kapt libs.main.hiltKapt
