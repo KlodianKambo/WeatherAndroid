@@ -21,6 +21,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 // FIXME test temporary broken due to module division
+//  test reference: branch release/1.0.0 commit 9d7cabc
 
 @RunWith(AndroidJUnit4::class)
 class WeatherActivityTest {

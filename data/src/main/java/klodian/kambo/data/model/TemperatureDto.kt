@@ -2,7 +2,7 @@ package klodian.kambo.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class TemperatureDto(
+internal data class TemperatureDto(
     val temp: Double,
     @SerializedName("feels_like")
     val feelsLike: Double,

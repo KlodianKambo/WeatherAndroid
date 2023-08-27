@@ -4,12 +4,12 @@ import arrow.core.Either
 import com.kambo.klodian.entities.model.ForecastWeather
 import com.kambo.klodian.entities.model.TemperatureUnit
 import klodian.kambo.domain.model.HttpRequestError
-import klodian.kambo.domain.repositories.WeatherRepo
+import klodian.kambo.domain.repositories.WeatherRepository
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
-class GetWeatherByLocationUseCase @Inject constructor(private val weatherRepo: WeatherRepo) {
+class GetWeatherByLocationUseCase @Inject constructor(private val weatherRepository: WeatherRepository) {
     suspend operator fun invoke(
         latitude: Double,
         longitude: Double,
@@ -17,7 +17,7 @@ class GetWeatherByLocationUseCase @Inject constructor(private val weatherRepo: W
         measurementUnit: TemperatureUnit,
         zoneId: ZoneId
     ): Either<HttpRequestError, ForecastWeather> {
-        return weatherRepo.getWeatherByLocation(
+        return weatherRepository.getWeatherByLocation(
             latitude,
             longitude,
             locale,

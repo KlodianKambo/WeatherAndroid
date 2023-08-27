@@ -1,4 +1,4 @@
-package klodian.kambo.data.controllers
+package klodian.kambo.data.repositories
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -8,13 +8,12 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import arrow.core.Either
 import com.google.android.gms.location.*
-import klodian.kambo.data.di.IoDispatcher
 import klodian.kambo.domain.repositories.LocationRepository
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
-class LocationRepositoryImpl @Inject constructor(
+internal class LocationRepositoryImpl @Inject constructor(
     private val context: Context,
     private val coroutineDispatcher: CoroutineDispatcher
 ) : LocationRepository {
