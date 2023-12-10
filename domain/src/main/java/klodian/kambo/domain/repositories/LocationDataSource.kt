@@ -2,7 +2,7 @@ package klodian.kambo.domain.repositories
 
 import arrow.core.Either
 
-interface LocationRepository {
+interface LocationDataSource {
     data class LocationData(
         val latitude: Double,
         val longitude: Double

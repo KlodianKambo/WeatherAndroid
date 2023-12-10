@@ -1,11 +1,10 @@
 package klodian.kambo.data
 
 import arrow.core.Either
-import klodian.kambo.data.utils.performSafeRequest
+import klodian.kambo.data.utils.performCatchingRequest
 import klodian.kambo.domain.model.HttpRequestError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.junit.Test
@@ -21,7 +20,7 @@ class SafeRequestTest {
     fun `when lambda returns successfully then emit the result as success`() {
         runBlocking {
             val expectedResult = true
-            val result = performSafeRequest { expectedResult }
+            val result = performCatchingRequest { expectedResult }
             assertEquals(Either.right(expectedResult), result)
         }
     }
@@ -29,7 +28,7 @@ class SafeRequestTest {
     @Test
     fun `when lambda throws IOException then emit NetworkError`() {
         runBlocking {
-            val result = performSafeRequest { throw IOException() }
+            val result = performCatchingRequest { throw IOException() }
             assertEquals(Either.left(HttpRequestError.NetworkError), result)
         }
     }
@@ -43,7 +42,7 @@ class SafeRequestTest {
 
         runBlocking {
             val result =
-                performSafeRequest { throw HttpException(Response.error<Any>(404, errorBody)) }
+                performCatchingRequest { throw HttpException(Response.error<Any>(404, errorBody)) }
             assertEquals(Either.left(HttpRequestError.NotFound), result)
         }
     }
@@ -56,7 +55,7 @@ class SafeRequestTest {
         )
         runBlocking {
             val result =
-                performSafeRequest { throw HttpException(Response.error<Any>(402, errorBody)) }
+                performCatchingRequest { throw HttpException(Response.error<Any>(402, errorBody)) }
             assertEquals(Either.left(HttpRequestError.Generic), result)
         }
     }
@@ -64,7 +63,7 @@ class SafeRequestTest {
     @Test
     fun `when lambda throws unknown exception then it should emit GenericError`() {
         runBlocking {
-            val result = performSafeRequest { throw IllegalStateException() }
+            val result = performCatchingRequest { throw IllegalStateException() }
             assertEquals(Either.left(HttpRequestError.Generic), result)
         }
     }

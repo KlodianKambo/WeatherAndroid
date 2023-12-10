@@ -8,15 +8,15 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import arrow.core.Either
 import com.google.android.gms.location.*
-import klodian.kambo.domain.repositories.LocationRepository
+import klodian.kambo.domain.repositories.LocationDataSource
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
-internal class LocationRepositoryImpl @Inject constructor(
+internal class LocationDataSourceImpl @Inject constructor(
     private val context: Context,
     private val coroutineDispatcher: CoroutineDispatcher
-) : LocationRepository {
+) : LocationDataSource {
 
     private val fusedLocationClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
@@ -25,13 +25,13 @@ internal class LocationRepositoryImpl @Inject constructor(
     /** suppressed because useless, permissions are checked with [hasGeolocPermissions] method */
     @SuppressLint("MissingPermission")
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getLocation(): Either<LocationRepository.Error, LocationRepository.LocationData> =
+    override suspend fun getLocation(): Either<LocationDataSource.Error, LocationDataSource.LocationData> =
         withContext(coroutineDispatcher) {
             suspendCancellableCoroutine { continuation ->
 
                 if (!hasGeolocPermissions()) {
                     continuation.resume(
-                        Either.left(LocationRepository.Error.PermissionsDenied),
+                        Either.left(LocationDataSource.Error.PermissionsDenied),
                         onCancellation = null
                     )
                 }
@@ -51,7 +51,7 @@ internal class LocationRepositoryImpl @Inject constructor(
                             fusedLocationClient.removeLocationUpdates(this)
                             continuation.resume(
                                 Either.right(
-                                    LocationRepository.LocationData(
+                                    LocationDataSource.LocationData(
                                         latitude = lastLocation.latitude,
                                         longitude = lastLocation.longitude
                                     )
