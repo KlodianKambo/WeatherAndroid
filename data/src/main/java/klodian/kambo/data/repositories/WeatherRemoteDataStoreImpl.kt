@@ -2,14 +2,14 @@ package klodian.kambo.data.repositories
 
 import arrow.core.Either
 import com.kambo.klodian.entities.model.*
-import klodian.kambo.data.GetIconPathUseCase
+import klodian.kambo.data.BuildIconPath
 import klodian.kambo.data.api.WeatherApi
 import klodian.kambo.data.model.ForecastResponseDto
 import klodian.kambo.data.model.TemperatureDto
 import klodian.kambo.data.model.WeatherDto
-import klodian.kambo.data.utils.performSafeRequest
+import klodian.kambo.data.utils.performCatchingRequest
 import klodian.kambo.domain.model.HttpRequestError
-import klodian.kambo.domain.repositories.WeatherRepository
+import klodian.kambo.domain.repositories.WeatherRemoteDataStore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
@@ -19,11 +19,11 @@ import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
-internal class WeatherRepositoryImpl @Inject constructor(
+internal class WeatherRemoteDataStoreImpl @Inject constructor(
     private val weatherApi: WeatherApi,
-    private val getIconPathUseCase: GetIconPathUseCase,
+    private val buildIconPath: BuildIconPath,
     private val coroutineDispatcher: CoroutineDispatcher
-) : WeatherRepository {
+) : WeatherRemoteDataStore {
 
     companion object {
         private const val TEMPERATURE_UNIT_IMPERIAL = "imperial"
@@ -43,7 +43,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
         }
 
         supervisorScope {
-            performSafeRequest {
+            performCatchingRequest {
                 weatherApi.getWeather(
                     cityNamePattern = cityName,
                     language = locale.language,
@@ -67,7 +67,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
         }
 
         supervisorScope {
-            performSafeRequest {
+            performCatchingRequest {
                 weatherApi.getWeatherByLocation(
                     latitude = latitude,
                     longitude = longitude,
@@ -87,7 +87,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
             id = id,
             weather = main,
             description = description,
-            iconName = getIconPathUseCase(icon)
+            iconName = buildIconPath(icon)
         )
     }
 

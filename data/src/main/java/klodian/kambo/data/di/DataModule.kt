@@ -7,14 +7,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import klodian.kambo.data.DataConfiguration
-import klodian.kambo.data.DataConfigurationImpl
-import klodian.kambo.data.GetIconPathUseCase
+import klodian.kambo.data.ApiClientConfiguration
+import klodian.kambo.data.ApiClientConfigurationImpl
+import klodian.kambo.data.BuildIconPath
 import klodian.kambo.data.api.WeatherApi
-import klodian.kambo.data.repositories.LocationRepositoryImpl
-import klodian.kambo.data.repositories.WeatherRepositoryImpl
-import klodian.kambo.domain.repositories.LocationRepository
-import klodian.kambo.domain.repositories.WeatherRepository
+import klodian.kambo.data.repositories.LocationDataSourceImpl
+import klodian.kambo.data.repositories.WeatherRemoteDataStoreImpl
+import klodian.kambo.domain.repositories.LocationDataSource
+import klodian.kambo.domain.repositories.WeatherRemoteDataStore
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,7 +29,7 @@ internal class DataModule {
 
     @Singleton
     @Provides
-    fun providesOkHttpClient(dataConfiguration: DataConfiguration): OkHttpClient {
+    fun providesOkHttpClient(apiClientConfiguration: ApiClientConfiguration): OkHttpClient {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         return OkHttpClient.Builder()
@@ -39,7 +39,7 @@ internal class DataModule {
                 val url = original
                     .url()
                     .newBuilder()
-                    .addQueryParameter(dataConfiguration.appIdParam, dataConfiguration.appIdValue)
+                    .addQueryParameter(apiClientConfiguration.appIdParam, apiClientConfiguration.appIdValue)
                     .build()
 
                 original = original.newBuilder().url(url).build()
@@ -52,10 +52,10 @@ internal class DataModule {
     @Provides
     fun providesRetrofit(
         okHttpClient: OkHttpClient,
-        dataConfiguration: DataConfiguration
+        apiClientConfiguration: ApiClientConfiguration
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(dataConfiguration.baseUrl)
+            .baseUrl(apiClientConfiguration.baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(Gson()))
             .build()
@@ -63,8 +63,8 @@ internal class DataModule {
 
     @Singleton
     @Provides
-    fun providesDataConfiguration(): DataConfiguration {
-        return DataConfigurationImpl()
+    fun providesDataConfiguration(): ApiClientConfiguration {
+        return ApiClientConfigurationImpl()
     }
 
     @Singleton
@@ -80,14 +80,14 @@ class RepositoryModule {
     internal fun bindsRepository(
         @IoDispatcher coroutineDispatcher: CoroutineDispatcher,
         weatherApi: WeatherApi,
-        getIconPathUseCase: GetIconPathUseCase,
-    ): WeatherRepository = WeatherRepositoryImpl(weatherApi, getIconPathUseCase, coroutineDispatcher)
+        buildIconPath: BuildIconPath,
+    ): WeatherRemoteDataStore = WeatherRemoteDataStoreImpl(weatherApi, buildIconPath, coroutineDispatcher)
 
     @Provides
     internal fun bindsLocationRepository(
         @ApplicationContext context: Context,
         @IoDispatcher coroutineDispatcher: CoroutineDispatcher
-    ): LocationRepository =
-        LocationRepositoryImpl(context, coroutineDispatcher)
+    ): LocationDataSource =
+        LocationDataSourceImpl(context, coroutineDispatcher)
 
 }

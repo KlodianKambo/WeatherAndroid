@@ -7,7 +7,7 @@ import com.kambo.klodian.entities.model.TemperatureUnit
 import java.time.ZoneId
 import java.util.*
 
-interface WeatherRepository {
+interface WeatherRemoteDataStore {
     suspend fun getWeather(
         cityName: String,
         locale: Locale,
